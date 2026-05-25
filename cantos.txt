@@ -1,0 +1,86 @@
+[
+    {
+        "id": "e1",
+        "titulo": "Qué alegría cuando me dijeron",
+        "categoria": "entrada",
+        "letra": "¡Qué alegría cuando me dijeron:\n«Vamos a la casa del Señor»!\nYa están pisando nuestros pies\ntus umbrales, Jerusalén.\n\nJerusalén está fundada\ncomo ciudad bien compacta.\nAllá suben las tribus,\nlas tribus del Señor."
+    },
+    {
+        "id": "c-1779717522937",
+        "titulo": "En nombre del padre",
+        "letra": "En nombre del Padre\nen nombre del Hijo\nen nombre del Santo Espíritu\nestamos aquí\n\nEn nombre del Padre\nen nombre del Hijo\nen nombre del Santo Espíritu\nestamos aquí\n\nPara alabar y agradecer\nbendecir y adorar\nestamos aquí\na tu disposición\n\nPara alabar y agradecer\nbendecir y adorar\nestamos aquí\nDios trino de amor",
+        "categoria": "entrada"
+    },
+    {
+        "id": "c-1779718038866",
+        "titulo": "Gloria Palazón",
+        "letra": "Gloria a Dios en el Cielo,\ny en la tierra paz a los\nhombres que ama el Señor\n\nPor tu inmensa gloria te alabamos,\nte bendecimos, te adoramos,\nte glorificamos, te damos gracias\n\nGloria a Dios en el Cielo,\ny en la tierra paz a los\nhombres que ama el Señor\n\nSeñor Dios, Rey celestial,\nDios Padre todopoderoso\nSeñor, Hijo único, Jesucris-to\nSeñor Dios, Cordero de Dios,\nHijo del Padre\n\nGloria a Dios en el Cielo,\ny en la tierra paz a los\nhombres que ama el Señor\n\nTú que quitas el pecado del mundo,\nten piedad de nosotros;\ntú que quitas el pecado del mundo,\natiende nuestra súplica;\ntú que estás sentado a la derecha del Padre\nten piedad de nosotros\n\nGloria a Dios en el Cielo,\ny en la tierra paz a los\nhombres que ama el Señor\n\nPorque sólo tú eres Santo,\nsólo tú Señor,\nsólo tú Altísimo, Jesucristo,\ncon el Espíritu Santo\nen la gloria de Dios Padre\nAmen",
+        "categoria": "gloria"
+    },
+    {
+        "id": "c-1779718219356",
+        "titulo": "Salmo Dan 3",
+        "letra": "¡A tí gloria y alabanza por los siglos!",
+        "categoria": "salmo"
+    },
+    {
+        "id": "c-1779718273025",
+        "titulo": "Aleluya, gloria al Señor",
+        "letra": "Alelu, alelu, alelu, aleluya\ngloria al Señor\nAlelu, alelu, alelu, aleluya\ngloria al Señor\n\nGloria al Señor, aleluya\ngloria al Señor, aleluya\ngloria al Señor, aleluya\ngloria al Señor\n\nAlelu, alelu, alelu, aleluya\ngloria al Señor\nAlelu, alelu, alelu, aleluya\ngloria al Señor",
+        "categoria": "aleluya"
+    },
+    {
+        "id": "c-1779718325278",
+        "titulo": "Te presentamos el vino y el pan",
+        "letra": "Te presentamos el vino y el pan,\nbendito seas por siempre, Señor\nTe presentamos el vino y el pan,\nbendito seas por siempre, Señor\n\nBendito seas, Señor, por este pan que nos diste,\nfruto de la tierra y del trabajo de los hombres\nTe presentamos el vino y el pan,\nbendito seas por siempre, Señor\n\nBendito seas, Señor, el vino Tú nos lo  diste,\nfruto de la tierra y del trabajo de los hombres\nTe presentamos el vino y el pan,\nbendito seas por siempre, Señor",
+        "categoria": "ofertorio"
+    },
+    {
+        "id": "c-1779718357468",
+        "titulo": "Santo litúrgico",
+        "letra": "Santo, santo\nsanto es el Señor, Dios del Universo\nllenos están el cielo y la tierra\nde du Gloria, Hosana\n\nHosanna, hosanna,\nhosanna en el cielo\nhosanna, hosanna,\nhosanna en el cielo\n\nBendito el que viene\nen Nombre del Señor,\nhosanna en el cielo,\nhosanna\n\n\nHosanna, hosanna,\nhosanna en el cielo\nhosanna, hosanna,\nhosanna en el cielo",
+        "categoria": "santo"
+    },
+    {
+        "id": "c-1779718386936",
+        "titulo": "Cordero de Dios en Sol",
+        "letra": "Cordero de Dios, \nque quitas el pecado del\nmundo,\nten piedad\n\nCordero de Dios, \nque quitas el pecado del\nmundo,\nten piedad\n\nCordero de Dios, \nque quitas el pecado del\nmundo\n\nDanos la paz,\ndanos la paz,\ndanos la paz",
+        "categoria": "cordero"
+    },
+    {
+        "id": "c-1779718417372",
+        "titulo": "El calor de la palabra",
+        "letra": "Cerca del hogar\nque calienta mi alma\nquiero yo saber lo que en comunidad,\nTú quieres de mí\n\nSintiendo el calor\nque me da tu palabra\nquiero responder a lo que me pides\nsin que a nada yo pueda temer\n\nA nada, a nada\nnunca he de temer\nyendo junto a Tí con tus ojos de fe\nnunca he de temer\n\na nada, a nada\nnunca he de temer\nyendo junto a Tí con tus ojos de fe\nnunca he de temer\n\nLlegan hasta mí,\nmomentos sin calma,\nque me hacen dudar de si mi camino\nse orienta hacia Ti\n\nComienza a faltar\nla paz en mi alma,\ny sin esperarlo apareces Tú\ny ya nada he de temer\n\nA nada, a nada\nnunca he de temer\nyendo junto a Tí con tus ojos de fe\nnunca he de temer\n\na nada, a nada\nnunca he de temer\nyendo junto a Tí con tus ojos de fe\nnunca he de temer",
+        "categoria": "comunion"
+    },
+    {
+        "id": "c-1779718448062",
+        "titulo": "Todo",
+        "letra": "Padre, pon tu Espíritu sobre mí\naquí estoy, aquí me tienes\ngracias por la vida\nque la viva siendo todo yo\nque la viva siendo todo yo\n\nTodo libre, todo entregado\ntodo Tú, todo dado\ntodo alegre, todo amante\ntodo amado\ntodo arrodillado\n\nTodo hijo, todo hermano\ntodo padre, todo disfruto\ntodo mariano, todos por todos\nque viva todo\ncon toda el alma",
+        "categoria": "postcomunion"
+    },
+    {
+        "id": "c-1779718491010",
+        "titulo": "Madre de Hakuna",
+        "letra": "Llévame contigo a todos lados,\nque pueda dormir tranquilo bajo tu precioso manto\nllévame contigo, no me sueltes de la mano,\ny que cuando sienta frío, note tu cálido abrazo\n\nLlévame contigo, a donde quieras,\ny es que no hay mayor consuelo que una madre que te quiera\ny que algún día pudiera, al cielo ir por tu escalera\ny entender que contigo Madre querida, valió la pena\n\nQue no me canse nunca de mirarte\ny repetir con humilde devoción:\nte quiero con locura preciosa Madre\ntú el mejor regalo de mi Dios\n\nQue no me canse nunca de mirarte\ny repetir con humilde devoción:\nte quiero con locura preciosa Madre\ntú el mejor regalo de mi Dios",
+        "categoria": "salida"
+    },
+    {
+        "id": "c-1779728521027",
+        "titulo": "Avisos 7.6.2026",
+        "letra": "Próxima semana:\nCelebración Corpus Chriti:\nJueves 4.6.2026 a las 9h\nen Marienplatz\nDomingo 7.6.2026 a las 12h\nen Maria Heimsuchung\n(No hay misa de 10:30)",
+        "categoria": "aviso"
+    },
+    {
+        "id": "c-1779729305294",
+        "titulo": "Credo Niceno-Constantinopolitano",
+        "letra": "Creo en un solo Dios,\nPadre todopoderoso,\nCreador del cielo y de la tierra,\nde todo lo visible y lo invisible.\n\nCreo en un solo Señor, Jesucristo,\nHijo único de Dios,\nnacido del Padre antes de todos los siglos:\nDios de Dios, Luz de Luz,\nDios verdadero de Dios verdadero;\nengendrado, no creado,\nde la misma naturaleza del Padre,\npor quien todo fue hecho;\n\nque por nosotros, los hombres,\ny por nuestra salvación bajó del cielo,\ny por obra del Espíritu Santo\nse encarnó de María, la Virgen,\ny se hizo hombre;\ny por nuestra causa fue crucificado\nen tiempos de Poncio Pilato;\n\npadeció y fue sepultado,\ny resucitó al tercer día, según las Escrituras,\nsubió al cielo,\ny está sentado a la derecha del Padre;\ny de nuevo vendrá con gloria para juzgar a vivos y muertos,\ny su reino no tendrá fin\n\nCreo en el Espíritu Santo,\nSeñor y dador de vida,\nque procede del Padre y del Hijo,\nque con el Padre y el Hijo\nrecibe una misma adoración y gloria,\ny que habló por los profetas\n\nCreo en la Iglesia, que es una,\nsanta, católica y apostólica\nConfieso que hay un solo bautismo\npara el perdón de los pecados\nEspero la resurrección de los muertos\ny la vida del mundo futuro.\nAmen",
+        "categoria": "credo"
+    },
+    {
+        "id": "c-1779729549880",
+        "titulo": "Credo de los apóstoles",
+        "letra": "Creo en Dios, Padre Todopoderoso,\nCreador del cielo y de la tierra.\nCreo en Jesucristo, su único Hijo,\nNuestro Señor,\nque fue concebido por obra y gracia del Espíritu Santo,\n\nnació de Santa María Virgen,\npadeció bajo el poder de Poncio Pilato, \nfue crucificado, muerto y sepultado,\ndescendió a los infiernos,\n\nal tercer día resucitó de entre\nlos muertos, y subió a los cielos\ny está sentado a la derecha de\nDios, Padre todopoderoso.\nDesde allí ha de venir\na juzgar a vivos y muertos.\n\nCreo en el Espíritu Santo,\nla santa Iglesia católica, \nla comunión de los santos,\nel perdón de los pecados, \nla resurrección de la carne\ny la vida eterna.\nAmén",
+        "categoria": "credo"
+    }
+]
