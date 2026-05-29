@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Gestor slides coro MCLE</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#FFCC00">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('sw.js')
+            .then(reg => console.log('App lista en el móvil'))
+            .catch(err => console.log('Error al registrar la app', err));
+        });
+      }
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/gh/gitbrent/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
+
+    <style>
+        :root { --accent-color: #FFCC00; --bg-dark: #0c0c0c; --panel-bg: #161616; --border-color: #2a2a2a; }
+        body { background-color: var(--bg-dark); color: #f3f3f3; font-family: 'Inter', sans-serif; overflow-x: hidden; }
+        h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
+        .slide-preview { background-color: #000; aspect-ratio: 16 / 9; box-shadow: 0 20px 50px rgba(0,0,0,0.9); border: 1px solid var(--border-color); position: relative; font-family: Arial, sans-serif; }
+        .custom-scroll::-webkit-scrollbar { width: 5px; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
+        
+        .form-select, .form-input { background-color: #000; border: 1px solid var(--border-color); color: #fff; font-size: 14px; padding: 10px 12px; border-radius: 8px; width: 100%; outline: none; }
+        .form-select:focus, .form-input:focus { border-color: var(--accent-color); }
+        .btn-primary { background-color: var(--accent-color); color: #000; font-weight: 800; }
+        .prog-item:hover .move-controls { opacity: 1; }
+        .move-controls { opacity: 0.8; }
+
+        @media (max-width: 1024px) {
+            body { font-size: 16px; }
+            .form-select, .form-input { font-size: 16px !important; padding: 12px !important; }
+            button, .btn-primary { padding: 12px 16px !important; font-size: 14px !important; }
+            section.sticky { position: relative !important; top: 0 !important; height: auto !important; max-height: 500px; }
+        }
+    </style>
+</head>
+<body class="min-h-screen pb-12">
+
+    <header class="border-b border-stone-800 bg-stone-950/90 backdrop-blur py-5 px-4 sm:px-8 mb-6 sticky top-0 z-50">
+        <div class="max-w-[1600px] mx-auto flex flex-col xl:flex-row justify-between items-center gap-6">
+            <div class="flex items-center gap-4 text-center sm:text-left flex-col sm:flex-row">
+                <div class="text-4xl text-amber-500"><i class="fa-solid fa-cross"></i></div>
+                <div>
+                    <h1 class="text-2xl font-black tracking-tighter text-white uppercase leading-none">Gestor slides coro MCLE</h1>
+                    <p class="text-[11px] tracking-[0.2em] text-stone-500 font-bold uppercase mt-1">Misión de Lengua Española • Archidiócesis de Múnich</p>
+                </div>
+            </div>
+            
+            <div class="flex flex-wrap items-center gap-4 justify-center xl:justify-end w-full xl:w-auto">
+                <input type="file" id="file-input" accept=".txt" class="hidden" onchange="cargarCantosTxt(event)">
+                <button onclick="document.getElementById('file-input').click()" class="bg-stone-900 hover:bg-stone-800 text-stone-200 font-bold px-4 py-3 rounded-xl text-xs border border-stone-800 flex items-center gap-2 flex-1 sm:flex-none justify-center">
+                    <i class="fa-solid fa-file-import text-amber-500"></i> Importar .txt
+                </button>
+                <button onclick="exportarCantosTxt()" class="bg-stone-900 hover:bg-stone-800 text-stone-200 font-bold px-4 py-3 rounded-xl text-xs border border-stone-800 flex items-center gap-2 flex-1 sm:flex-none justify-center">
+                    <i class="fa-solid fa-file-export text-emerald-500"></i> Guardar .txt
+                </button>
+                <div class="relative w-[46%] sm:w-40">
+                    <label class="text-[9px] font-black uppercase text-stone-500 absolute -top-4 left-1">Misa</label>
+                    <input type="text" id="pptx-filename" value="Misa_Domingo" oninput="actualizarPreview()" class="bg-stone-950 border border-stone-800 rounded-lg px-3 py-2.5 text-xs text-white w-full font-bold outline-none">
+                </div>
+                <div class="relative w-[46%] sm:w-32">
+                    <label class="text-[9px] font-black uppercase text-stone-500 absolute -top-4 left-1">Fecha</label>
+                    <input type="text" id="pptx-date" oninput="actualizarPreview()" class="bg-stone-950 border border-stone-800 rounded-lg px-3 py-2.5 text-xs text-white w-full font-bold outline-none">
+                </div>
+                <button onclick="generarPowerPoint()" class="btn-primary px-6 py-3.5 rounded-xl flex items-center justify-center gap-2 text-xs shadow-lg active:scale-95 transition-all w-full sm:w-auto mt-2 sm:mt-0">
+                    <i class="fa-solid fa-file-powerpoint text-base"></i> GENERAR PPTX
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-[1600px] mx-auto px-4 sm:px-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <section class="lg:col-span-4 xl:col-span-3 bg-stone-900/30 border border-stone-800 rounded-3xl p-5 flex flex-col h-[550px] lg:h-[calc(100vh-160px)] sticky top-28">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-sm font-black text-white uppercase"><i class="fa-solid fa-book-bible text-amber-500"></i> Cantoral (<span id="total-cantos">0</span>)</h2>
+                <button onclick="abrirModalNuevoCanto()" class="bg-amber-500/10 text-amber-500 px-4 py-2 rounded-xl text-[11px] font-black border border-amber-500/30 active:scale-95 transition-all">+ AÑADIR</button>
+            </div>
+            <input type="text" id="busqueda" oninput="filtrarBiblioteca()" placeholder="Buscar canto o letra..." class="w-full bg-stone-950 border border-stone-800 rounded-xl px-4 py-3 text-sm text-stone-200 outline-none mb-4">
+            <div class="flex-grow overflow-y-auto space-y-2 pr-1 custom-scroll" id="lista-biblioteca"></div>
+        </section>
+
+        <section class="lg:col-span-8 xl:col-span-9 flex flex-col gap-6">
+            
+            <div class="bg-stone-900/30 border border-stone-800 rounded-3xl p-5">
+                <h3 class="text-[11px] font-black text-stone-400 uppercase mb-4 italic"><i class="fa-solid fa-sliders text-amber-500"></i> Formato de Proyección</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+                    <div class="bg-black/40 p-4 rounded-2xl border border-stone-800">
+                        <p class="text-[10px] font-black text-amber-500 mb-3">PORTADA</p>
+                        <div class="flex gap-2 mb-2">
+                            <input type="number" id="size-cover-title" value="58" class="form-input" onchange="actualizarPreview()">
+                            <input type="number" id="size-cover-sub" value="28" class="form-input" onchange="actualizarPreview()">
+                        </div>
+                        <select id="align-cover" class="form-select" onchange="actualizarPreview()"><option value="center" selected>Centrado</option><option value="left">Izquierda</option></select>
+                    </div>
+                    <div class="bg-black/40 p-4 rounded-2xl border border-stone-800">
+                        <p class="text-[10px] font-black text-amber-500 mb-3">TÍTULOS CANTOS</p>
+                        <input type="number" id="size-song-title" value="42" class="form-input mb-2" onchange="actualizarPreview()">
+                        <select id="align-song-title" class="form-select" onchange="actualizarPreview()"><option value="center" selected>Centrado</option><option value="left">Izquierda</option></select>
+                    </div>
+                    <div class="bg-black/40 p-4 rounded-2xl border border-stone-800">
+                        <p class="text-[10px] font-black text-amber-500 mb-3">TEXTO CANTOS</p>
+                        <input type="number" id="size-lyric-body" value="52" class="form-input mb-2" onchange="actualizarPreview()">
+                        <select id="align-lyric-body" class="form-select" onchange="actualizarPreview()"><option value="center" selected>Centrado</option><option value="left">Izquierda</option></select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                <div class="bg-stone-900/30 border border-stone-800 rounded-3xl p-5 h-[420px] flex flex-col">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-xs font-black text-white uppercase">Lista de Proyección</h2>
+                        <button onclick="limpiarPrograma()" class="text-xs font-bold text-rose-500 bg-rose-500/10 px-2 py-1 rounded-lg">VACIAR</button>
+                    </div>
+                    <div class="flex-grow overflow-y-auto space-y-2 pr-1 custom-scroll" id="lista-programa"></div>
+                </div>
+                
+                <div class="bg-stone-900/30 border border-stone-800 rounded-3xl p-5 h-[420px] flex flex-col">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-xs font-black text-white uppercase"><i class="fa-solid fa-desktop text-amber-500 mr-1"></i> Monitor de Sala</h3>
+                        <div class="flex gap-2 items-center">
+                            <button onclick="cambiarSlidePreview(-1)" class="w-9 h-9 rounded-xl bg-stone-950 border border-stone-800 flex items-center justify-center active:scale-90 transition-all"><i class="fa-solid fa-chevron-left text-xs"></i></button>
+                            <span id="preview-contador" class="text-xs font-bold px-1">0/0</span>
+                            <button onclick="cambiarSlidePreview(1)" class="w-9 h-9 rounded-xl bg-stone-950 border border-stone-800 flex items-center justify-center active:scale-90 transition-all"><i class="fa-solid fa-chevron-right text-xs"></i></button>
+                        </div>
+                    </div>
+                    <div class="slide-preview rounded-2xl flex-grow overflow-hidden flex flex-col justify-center p-4 text-center" id="preview-content"></div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div id="modal-canto" class="fixed inset-0 bg-black/95 backdrop-blur-xl z-[100] flex items-center justify-center p-3 sm:p-6 hidden overflow-y-auto">
+        <div class="bg-stone-900 border border-stone-800 w-full max-w-3xl rounded-[2rem] overflow-hidden my-auto">
+            <div class="px-6 py-4 sm:px-10 sm:py-6 border-b border-stone-800/50 flex justify-between items-center">
+                <h3 class="text-base sm:text-lg font-black text-white uppercase">Editor de Canto</h3>
+                <button onclick="cerrarModalCanto()" class="text-stone-500 hover:text-white text-2xl p-2"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="p-6 sm:p-10 space-y-4 sm:space-y-6">
+                <input type="hidden" id="modal-canto-id">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:grid-cols-3">
+                    <div>
+                        <label class="text-[10px] font-black text-stone-500 uppercase block mb-1.5">Categoría</label>
+                        <select id="modal-input-categoria" class="w-full bg-black border border-stone-800 rounded-xl px-4 py-3 text-sm text-white outline-none font-bold">
+                            <option value="entrada">Entrada</option><option value="piedad">Piedad</option><option value="gloria">Gloria</option><option value="salmo">Salmo</option>
+                            <option value="aleluya">Aleluya</option><option value="credo">Credo</option><option value="ofertorio">Ofertorio</option><option value="santo">Santo</option>
+                            <option value="cordero">Cordero</option><option value="comunion">Comunión</option><option value="postcomunion">Postcomunión</option><option value="aviso">Aviso</option><option value="salida">Salida</option>
+                        </select>
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="text-[10px] font-black text-stone-500 uppercase block mb-1.5">Título del Canto</label>
+                        <div class="flex gap-2">
+                            <input type="text" id="modal-input-titulo" class="w-full bg-black border border-stone-800 rounded-xl px-4 py-3 text-sm text-white font-bold outline-none flex-grow">
+                            <button onclick="buscarLetraInternet()" class="bg-stone-800 hover:bg-stone-700 text-amber-500 px-4 rounded-xl border border-stone-700 active:scale-95 transition-all flex items-center gap-2 font-bold text-xs" title="Buscar letra en Google">
+                                <i class="fa-solid fa-magnifying-glass"></i> <span class="hidden sm:inline">BUSCAR</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <label class="text-[10px] font-black text-stone-500 uppercase block mb-1.5">Letra (Usa Doble Intro para separar Diapositivas)</label>
+                    <textarea id="modal-input-letra" rows="7" class="w-full bg-black border border-stone-800 rounded-2xl px-4 py-4 text-sm text-white font-mono outline-none" placeholder="Estrofa 1&#10;&#10;Estrofa 2..."></textarea>
+                </div>
+            </div>
+            <div class="bg-black/50 px-6 py-4 sm:px-10 sm:py-6 flex justify-end gap-3">
+                <button onclick="cerrarModalCanto()" class="bg-stone-800 text-stone-300 font-bold px-6 py-3 rounded-xl text-xs uppercase">Cancelar</button>
+                <button onclick="guardarCanto()" class="btn-primary px-8 py-3 rounded-xl text-xs uppercase transition-all shadow-lg">Guardar Cambios</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const canvasCategorias = { entrada:"Entrada", piedad:"Piedad", gloria:"Gloria", salmo:"Salmo", aleluya:"Aleluya", credo:"Credo", ofertorio:"Ofertorio", santo:"Santo", cordero:"Cordero", comunion:"Comunión", postcomunion:"Postcomunión", aviso:"Aviso", salida:"Salida" };
+        let biblioteca = [], programa = [], previewIndex = 0, previewSlides = [], colapsados = {};
+
+        window.addEventListener('load', () => {
+            const hoy = new Date();
+            document.getElementById('pptx-date').value = `${String(hoy.getDate()).padStart(2,'0')}.${String(hoy.getMonth()+1).padStart(2,'0')}.${hoy.getFullYear()}`;
+            Object.keys(canvasCategorias).forEach(cat => colapsados[cat] = false);
+            
+            fetch('cantos.txt?v=' + Date.now())
+                .then(response => {
+                    if (!response.ok) throw new Error("No se encontró el archivo.");
+                    return response.text();
+                })
+                .then(texto => {
+                    biblioteca = JSON.parse(texto);
+                    localStorage.setItem('mcm_v21_final', JSON.stringify(biblioteca));
+                    actualizarBibliotecaUI();
+                })
+                .catch(err => {
+                    const localData = localStorage.getItem('mcm_v21_final');
+                    if (localData) biblioteca = JSON.parse(localData);
+                    actualizarBibliotecaUI();
+                });
+        });
+
+        // NUEVA FUNCIÓN: Abre Google con el título para copiar la letra
+        function buscarLetraInternet() {
+            const titulo = document.getElementById('modal-input-titulo').value.trim();
+            if (!titulo) {
+                alert("Escribe primero el título del canto para poder buscarlo.");
+                return;
+            }
+            const query = encodeURIComponent(titulo + " letra canto catolico");
+            window.open(`https://www.google.com/search?q=${query}`, '_blank');
+        }
+
+        function cargarCantosTxt(event) {
+            const file = event.target.files[0];
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    biblioteca = data; localStorage.setItem('mcm_v21_final', JSON.stringify(biblioteca));
+                    actualizarBibliotecaUI(); alert(`Éxito: ${biblioteca.length} cantos importados.`);
+                } catch (err) { alert(`Error de formato al procesar el archivo de texto.`); }
+            };
+            reader.readAsText(file, 'UTF-8');
+        }
+
+        function exportarCantosTxt() {
+            if (biblioteca.length === 0) return;
+            const blob = new Blob([JSON.stringify(biblioteca, null, 4)], { type: 'text/plain;charset=utf-8' });
+            const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = 'cantos.txt'; link.click();
+        }
+
+        function renderizarBiblioteca(lista) {
+            const container = document.getElementById('lista-biblioteca');
+            container.innerHTML = '';
+            const grupos = {}; Object.keys(canvasCategorias).forEach(cat => grupos[cat] = []);
+            lista.forEach(c => { if(grupos[c.categoria]) grupos[c.categoria].push(c); });
+            document.getElementById('total-cantos').textContent = biblioteca.length;
+            Object.keys(canvasCategorias).forEach(catKey => {
+                let cantos = grupos[catKey]; if (cantos.length === 0) return;
+                cantos.sort((a,b) => a.titulo.localeCompare(b.titulo,'es'));
+                const isC = colapsados[catKey];
+                const head = document.createElement('div');
+                head.className = "text-[11px] font-black text-stone-200 px-3 py-3 rounded-xl mt-2 border-l-4 border-amber-500 bg-stone-900/50 flex justify-between items-center cursor-pointer";
+                head.onclick = () => { colapsados[catKey] = !colapsados[catKey]; renderizarBiblioteca(lista); };
+                head.innerHTML = `<span>${canvasCategorias[catKey].toUpperCase()}</span><i class="fa-solid ${isC?'fa-chevron-right':'fa-chevron-down'} text-[9px]"></i>`;
+                container.appendChild(head);
+                if (!isC) cantos.forEach(c => {
+                    const card = document.createElement('div');
+                    card.className = "bg-stone-900/20 border border-stone-800 p-3 mb-1 rounded-xl flex justify-between items-center group cursor-pointer hover:border-stone-600";
+                    card.onclick = (e) => { if(!e.target.closest('button')) agregarAlPrograma(c); };
+                    card.innerHTML = `<div class="truncate text-[13px] font-bold text-stone-300 group-hover:text-white flex-1">${c.titulo}</div><button onclick="abrirModalEditarCanto('${c.id}'); event.stopPropagation();" class="p-2 text-stone-500 hover:text-amber-500"><i class="fa-solid fa-pen text-xs"></i></button>`;
+                    container.appendChild(card);
+                });
+            });
+        }
+
+        function filtrarBiblioteca() {
+            const q = document.getElementById('busqueda').value.toLowerCase().trim();
+            const f = biblioteca.filter(c => c.titulo.toLowerCase().includes(q) || c.letra.toLowerCase().includes(q));
+            renderizarBiblioteca(f);
+        }
+        function actualizarBibliotecaUI() { filtrarBiblioteca(); }
+
+        function agregarAlPrograma(c) { programa.push({...c, pId: Date.now()+Math.random()}); actualizarProgramaUI(); }
+        
+        function moverCanto(i, d) { 
+            const n = i+d; 
+            if(n>=0 && n<programa.length) { 
+                const temp = programa[i];
+                programa[i] = programa[n];
+                programa[n] = temp;
+                actualizarProgramaUI(); 
+            }
+        }
+        function removerDelPrograma(i) { programa.splice(i,1); actualizarProgramaUI(); }
+        function limpiarPrograma() { if(confirm("¿Vaciar lista de proyección?")) { programa = []; actualizarProgramaUI(); } }
+
+        function actualizarProgramaUI() {
+            const container = document.getElementById('lista-programa');
+            container.innerHTML = '';
+            if (programa.length === 0) { container.innerHTML = `<div class="h-full flex items-center justify-center text-stone-600 text-xs italic">Lista de proyección vacía.</div>`; return; }
+            programa.forEach((c, i) => {
+                const div = document.createElement('div');
+                div.className = "bg-black/40 border border-stone-800 p-3 rounded-xl flex justify-between items-center gap-3 group";
+                div.innerHTML = `
+                <div class="flex items-center gap-2 truncate flex-1">
+                    <span class="text-xs font-black text-amber-500 bg-amber-500/10 px-2 py-0.5 rounded">#${i+1}</span>
+                    <div class="truncate text-[13px] font-bold uppercase text-stone-200">${c.titulo}</div>
+                </div>
+                <div class="flex gap-1 items-center move-controls">
+                    <button onclick="moverCanto(${i},-1)" class="p-2 text-stone-400 hover:text-white"><i class="fa-solid fa-arrow-up text-xs"></i></button>
+                    <button onclick="moverCanto(${i},1)" class="p-2 text-stone-400 hover:text-white"><i class="fa-solid fa-arrow-down text-xs"></i></button>
+                    <button onclick="removerDelPrograma(${i})" class="p-2 text-stone-500 hover:text-rose-500 ml-1"><i class="fa-solid fa-xmark text-sm"></i></button>
+                </div>`;
+                container.appendChild(div);
+            });
+            actualizarPreview();
+        }
+
+        function compilarSlides() {
+            const l = [{ tipo:'portada', t: document.getElementById('pptx-filename').value.toUpperCase(), f: document.getElementById('pptx-date').value }];
+            programa.forEach(c => {
+                c.letra.replace(/\r\n/g,'\n').trim().split(/\n\n+/).forEach((txt, i) => l.push({ tipo:'canto', cT: c.titulo, txt: txt.trim(), esP: (i===0) }));
+                l.push({ tipo:'negro' });
+            });
+            return l;
+        }
+
+        function actualizarPreview() {
+            previewSlides = compilarSlides();
+            const content = document.getElementById('preview-content');
+            if (previewSlides.length === 0) { document.getElementById('preview-contador').textContent = "0/0"; content.innerHTML = ""; return; }
+            if (previewIndex >= previewSlides.length) previewIndex = previewSlides.length-1;
+            document.getElementById('preview-contador').textContent = `${previewIndex+1}/${previewSlides.length}`;
+            const s = previewSlides[previewIndex]; content.innerHTML = '';
+            if (s.tipo === 'portada') {
+                const szT = document.getElementById('size-cover-title').value, szS = document.getElementById('size-cover-sub').value, al = document.getElementById('align-cover').value;
+                content.innerHTML = `<div style="text-align:${al}; font-weight:bold; width: 100%;"><h2 style="font-size:${szT/2.5}px; color:#fff;">${s.t}</h2><p style="font-size:${szS/2.5}px; margin:6px 0; color:#fff;">${s.f}</p><p style="font-size:${szS/2.5}px; color:#aaa; font-weight:500;">Misión Católica de Lengua Española de Múnich<br>Archidiócesis de Múnich y Freising</p></div>`;
+            } else if (s.tipo === 'canto') {
+                const szST = document.getElementById('size-song-title').value, szB = document.getElementById('size-lyric-body').value, alT = document.getElementById('align-song-title').value, alB = document.getElementById('align-lyric-body').value;
+                content.innerHTML = `<div style="font-weight:bold; width:100%; height:100%; position:relative;">${s.esP?`<h3 style="font-size:${szST/4}px; color:#FFCC00; text-align:${alT}; position:absolute; top:5px; width:100%; left:0; text-transform:uppercase;">${s.cT}</h3>`:''}<div style="height:100%; display:flex; align-items:center; justify-content:center;"><p style="font-size:${szB/3.2}px; text-align:${alB}; width:100%; padding:0 20px; color:#fff; line-height:1.3;">${s.txt.replace(/\n/g,'<br>')}</p></div></div>`;
+            } else content.innerHTML = `<div class="text-stone-800 text-xs font-black uppercase text-center">[ Pantalla en Negro ]</div>`;
+        }
+
+        function cambiarSlidePreview(d) { const n = previewIndex + d; if(n>=0 && n<previewSlides.length) { previewIndex = n; actualizarPreview(); } }
+        function abrirModalNuevoCanto() { document.getElementById('modal-canto-id').value=""; document.getElementById('modal-input-titulo').value=""; document.getElementById('modal-input-letra').value=""; document.getElementById('modal-canto').classList.remove('hidden'); }
+        function abrirModalEditarCanto(id) { const c = biblioteca.find(x => x.id === id); if(c) { document.getElementById('modal-canto-id').value=c.id; document.getElementById('modal-input-titulo').value=c.titulo; document.getElementById('modal-input-letra').value=c.letra; document.getElementById('modal-input-categoria').value=c.categoria; document.getElementById('modal-canto').classList.remove('hidden'); } }
+        function cerrarModalCanto() { document.getElementById('modal-canto').classList.add('hidden'); }
+        
+        function guardarCanto() {
+            const id = document.getElementById('modal-canto-id').value, t = document.getElementById('modal-input-titulo').value.trim(), l = document.getElementById('modal-input-letra').value.trim(), c = document.getElementById('modal-input-categoria').value;
+            if(!t || !l) return;
+            if(id) { const i = biblioteca.findIndex(x=>x.id===id); biblioteca[i]={id,titulo:t,letra:l,categoria:c}; }
+            else biblioteca.push({id:"c-"+Date.now(),titulo:t,letra:l,categoria:c});
+            localStorage.setItem('mcm_v21_final', JSON.stringify(biblioteca)); actualizarBibliotecaUI(); cerrarModalCanto();
+        }
+
+        function generarPowerPoint() {
+            if (programa.length === 0) return;
+            let pptx = new PptxGenJS(); pptx.defineLayout({ name:'W', width:13.33, height:7.5 }); pptx.layout='W';
+            const slides = compilarSlides(), szCT = parseInt(document.getElementById('size-cover-title').value), szCS = parseInt(document.getElementById('size-cover-sub').value), szST = parseInt(document.getElementById('size-song-title').value), szLB = parseInt(document.getElementById('size-lyric-body').value);
+            const alC = document.getElementById('align-cover').value, alST = document.getElementById('align-song-title').value, alLB = document.getElementById('align-lyric-body').value;
+            slides.forEach(slide => {
+                let s = pptx.addSlide(); s.background = { color: '000000' };
+                if (slide.tipo === 'portada') {
+                    s.addText(slide.t, { x:0, y:1.8, w:'100%', align:alC, fontFace:'Arial', fontSize:szCT, bold:true, color:'FFFFFF' });
+                    s.addText(slide.f, { x:0, y:3.2, w:'100%', align:alC, fontFace:'Arial', fontSize:szCS, bold:true, color:'FFFFFF' });
+                    s.addText("Misión Católica de Lengua Española de Múnich\nArchidiócesis de Múnich y Freising", { x:0, y:4.5, w:'100%', align:alC, fontFace:'Arial', fontSize:szCS, bold:true, color:'FFFFFF' });
+                } else if (slide.tipo === 'canto') {
+                    if (slide.esP) s.addText(slide.cT.toUpperCase(), { x:0.2, y:0.1, w:12.93, h:0.8, align:alST, valign:'top', fontFace:'Arial', fontSize:szST, bold:true, color:'FFCC00' });
+                    s.addText(slide.txt.trim(), { x:0.5, y:slide.esP?1.0:0.2, w:12.33, h:slide.esP?6.49:7.29, align:alLB, valign:'middle', fontFace:'Arial', fontSize:szLB, bold:true, color:'FFFFFF' });
+                }
+            });
+            pptx.writeFile({ fileName: (document.getElementById('pptx-filename').value || "Misa") + ".pptx" });
+        }
+    </script>
+</body>
+</html>
