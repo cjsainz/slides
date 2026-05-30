@@ -8,21 +8,37 @@
     <meta name="theme-color" content="#FFCC00">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <script>
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-          navigator.serviceWorker.register('sw.js')
-            .then(reg => console.log('App lista en el móvil'))
-            .catch(err => console.log('Error al registrar la app', err));
-        });
-      }
-    </script>
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/gh/gitbrent/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
+
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+      import { getFirestore, collection, onSnapshot, doc, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+      // ⚠️ REEMPLAZA ESTE BLOQUE CON TUS CLAVES REALES DE FIREBASE
+const firebaseConfig = {
+  apiKey: "AIzaSyAl5BGrajS3msFrzsHvJ6hBau_WHLt43Rg",
+  authDomain: "letras-slides-coro-mcle.firebaseapp.com",
+  projectId: "letras-slides-coro-mcle",
+  storageBucket: "letras-slides-coro-mcle.firebasestorage.app",
+  messagingSenderId: "254122067309",
+  appId: "1:254122067309:web:1037bc0bf0397ce2f30664",
+  measurementId: "G-DTE3G8GZ25"
+};
+
+      // Inicializar conexión con la nube
+      const app = initializeApp(firebaseConfig);
+      const db = getFirestore(app);
+      const cantosRef = collection(db, "cantos");
+
+      // Hacer funciones accesibles globalmente
+      window.dbCloud = { db, cantosRef, onSnapshot, doc, setDoc, deleteDoc };
+    </script>
 
     <style>
         :root { --accent-color: #FFCC00; --bg-dark: #0c0c0c; --panel-bg: #161616; --border-color: #2a2a2a; }
@@ -31,11 +47,9 @@
         .slide-preview { background-color: #000; aspect-ratio: 16 / 9; box-shadow: 0 20px 50px rgba(0,0,0,0.9); border: 1px solid var(--border-color); position: relative; font-family: Arial, sans-serif; }
         .custom-scroll::-webkit-scrollbar { width: 5px; }
         .custom-scroll::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
-        
         .form-select, .form-input { background-color: #000; border: 1px solid var(--border-color); color: #fff; font-size: 14px; padding: 10px 12px; border-radius: 8px; width: 100%; outline: none; }
         .form-select:focus, .form-input:focus { border-color: var(--accent-color); }
         .btn-primary { background-color: var(--accent-color); color: #000; font-weight: 800; }
-        .prog-item:hover .move-controls { opacity: 1; }
         .move-controls { opacity: 0.8; }
 
         @media (max-width: 1024px) {
@@ -53,19 +67,12 @@
             <div class="flex items-center gap-4 text-center sm:text-left flex-col sm:flex-row">
                 <div class="text-4xl text-amber-500"><i class="fa-solid fa-cross"></i></div>
                 <div>
-                    <h1 class="text-2xl font-black tracking-tighter text-white uppercase leading-none">Gestor slides coro MCLE</h1>
+                    <h1 class="text-2xl font-black tracking-tighter text-white uppercase leading-none">Gestor slides coro MCLE <span class="text-xs text-amber-500 font-normal lowercase bg-amber-500/10 px-2 py-1 rounded ml-2">Cloud Live</span></h1>
                     <p class="text-[11px] tracking-[0.2em] text-stone-500 font-bold uppercase mt-1">Misión de Lengua Española • Archidiócesis de Múnich</p>
                 </div>
             </div>
             
             <div class="flex flex-wrap items-center gap-4 justify-center xl:justify-end w-full xl:w-auto">
-                <input type="file" id="file-input" accept=".txt" class="hidden" onchange="cargarCantosTxt(event)">
-                <button onclick="document.getElementById('file-input').click()" class="bg-stone-900 hover:bg-stone-800 text-stone-200 font-bold px-4 py-3 rounded-xl text-xs border border-stone-800 flex items-center gap-2 flex-1 sm:flex-none justify-center">
-                    <i class="fa-solid fa-file-import text-amber-500"></i> Importar .txt
-                </button>
-                <button onclick="exportarCantosTxt()" class="bg-stone-900 hover:bg-stone-800 text-stone-200 font-bold px-4 py-3 rounded-xl text-xs border border-stone-800 flex items-center gap-2 flex-1 sm:flex-none justify-center">
-                    <i class="fa-solid fa-file-export text-emerald-500"></i> Guardar .txt
-                </button>
                 <div class="relative w-[46%] sm:w-40">
                     <label class="text-[9px] font-black uppercase text-stone-500 absolute -top-4 left-1">Misa</label>
                     <input type="text" id="pptx-filename" value="Misa_Domingo" oninput="actualizarPreview()" class="bg-stone-950 border border-stone-800 rounded-lg px-3 py-2.5 text-xs text-white w-full font-bold outline-none">
@@ -74,7 +81,7 @@
                     <label class="text-[9px] font-black uppercase text-stone-500 absolute -top-4 left-1">Fecha</label>
                     <input type="text" id="pptx-date" oninput="actualizarPreview()" class="bg-stone-950 border border-stone-800 rounded-lg px-3 py-2.5 text-xs text-white w-full font-bold outline-none">
                 </div>
-                <button onclick="generarPowerPoint()" class="btn-primary px-6 py-3.5 rounded-xl flex items-center justify-center gap-2 text-xs shadow-lg active:scale-95 transition-all w-full sm:w-auto mt-2 sm:mt-0">
+                <button onclick="generarPowerPoint()" class="btn-primary px-6 py-3.5 rounded-xl flex items-center justify-center gap-2 text-xs shadow-lg active:scale-95 transition-all w-full sm:w-auto">
                     <i class="fa-solid fa-file-powerpoint text-base"></i> GENERAR PPTX
                 </button>
             </div>
@@ -85,15 +92,16 @@
         
         <section class="lg:col-span-4 xl:col-span-3 bg-stone-900/30 border border-stone-800 rounded-3xl p-5 flex flex-col h-[550px] lg:h-[calc(100vh-160px)] sticky top-28">
             <div class="flex justify-between items-center mb-4">
-                <h2 class="text-sm font-black text-white uppercase"><i class="fa-solid fa-book-bible text-amber-500"></i> Cantoral (<span id="total-cantos">0</span>)</h2>
+                <h2 class="text-sm font-black text-white uppercase"><i class="fa-solid fa-cloud text-amber-500"></i> Nube (<span id="total-cantos">0</span>)</h2>
                 <button onclick="abrirModalNuevoCanto()" class="bg-amber-500/10 text-amber-500 px-4 py-2 rounded-xl text-[11px] font-black border border-amber-500/30 active:scale-95 transition-all">+ AÑADIR</button>
             </div>
             <input type="text" id="busqueda" oninput="filtrarBiblioteca()" placeholder="Buscar canto o letra..." class="w-full bg-stone-950 border border-stone-800 rounded-xl px-4 py-3 text-sm text-stone-200 outline-none mb-4">
-            <div class="flex-grow overflow-y-auto space-y-2 pr-1 custom-scroll" id="lista-biblioteca"></div>
+            <div class="flex-grow overflow-y-auto space-y-2 pr-1 custom-scroll" id="lista-biblioteca">
+                <div class="text-stone-500 text-xs text-center p-4">Conectando con la nube...</div>
+            </div>
         </section>
 
         <section class="lg:col-span-8 xl:col-span-9 flex flex-col gap-6">
-            
             <div class="bg-stone-900/30 border border-stone-800 rounded-3xl p-5">
                 <h3 class="text-[11px] font-black text-stone-400 uppercase mb-4 italic"><i class="fa-solid fa-sliders text-amber-500"></i> Formato de Proyección</h3>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
@@ -145,7 +153,7 @@
     <div id="modal-canto" class="fixed inset-0 bg-black/95 backdrop-blur-xl z-[100] flex items-center justify-center p-3 sm:p-6 hidden overflow-y-auto">
         <div class="bg-stone-900 border border-stone-800 w-full max-w-3xl rounded-[2rem] overflow-hidden my-auto">
             <div class="px-6 py-4 sm:px-10 sm:py-6 border-b border-stone-800/50 flex justify-between items-center">
-                <h3 class="text-base sm:text-lg font-black text-white uppercase">Editor de Canto</h3>
+                <h3 class="text-base sm:text-lg font-black text-white uppercase">Editor de Canto (Nube)</h3>
                 <button onclick="cerrarModalCanto()" class="text-stone-500 hover:text-white text-2xl p-2"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div class="p-6 sm:p-10 space-y-4 sm:space-y-6">
@@ -163,20 +171,23 @@
                         <label class="text-[10px] font-black text-stone-500 uppercase block mb-1.5">Título del Canto</label>
                         <div class="flex gap-2">
                             <input type="text" id="modal-input-titulo" class="w-full bg-black border border-stone-800 rounded-xl px-4 py-3 text-sm text-white font-bold outline-none flex-grow">
-                            <button onclick="buscarLetraInternet()" class="bg-stone-800 hover:bg-stone-700 text-amber-500 px-4 rounded-xl border border-stone-700 active:scale-95 transition-all flex items-center gap-2 font-bold text-xs" title="Buscar letra en Google">
+                            <button onclick="buscarLetraInternet()" class="bg-stone-800 hover:bg-stone-700 text-amber-500 px-4 rounded-xl border border-stone-700 active:scale-95 transition-all flex items-center gap-2 font-bold text-xs">
                                 <i class="fa-solid fa-magnifying-glass"></i> <span class="hidden sm:inline">BUSCAR</span>
                             </button>
                         </div>
                     </div>
                 </div>
                 <div>
-                    <label class="text-[10px] font-black text-stone-500 uppercase block mb-1.5">Letra (Usa Doble Intro para separar Diapositivas)</label>
-                    <textarea id="modal-input-letra" rows="7" class="w-full bg-black border border-stone-800 rounded-2xl px-4 py-4 text-sm text-white font-mono outline-none" placeholder="Estrofa 1&#10;&#10;Estrofa 2..."></textarea>
+                    <label class="text-[10px] font-black text-stone-500 uppercase block mb-1.5">Letra (Doble Intro para separar Diapositivas)</label>
+                    <textarea id="modal-input-letra" rows="7" class="w-full bg-black border border-stone-800 rounded-2xl px-4 py-4 text-sm text-white font-mono outline-none" placeholder="Estrofa 1..."></textarea>
                 </div>
             </div>
-            <div class="bg-black/50 px-6 py-4 sm:px-10 sm:py-6 flex justify-end gap-3">
-                <button onclick="cerrarModalCanto()" class="bg-stone-800 text-stone-300 font-bold px-6 py-3 rounded-xl text-xs uppercase">Cancelar</button>
-                <button onclick="guardarCanto()" class="btn-primary px-8 py-3 rounded-xl text-xs uppercase transition-all shadow-lg">Guardar Cambios</button>
+            <div class="bg-black/50 px-6 py-4 sm:px-10 sm:py-6 flex justify-between gap-3">
+                <button id="btn-eliminar-cloud" onclick="eliminarCantoCloud()" class="bg-rose-950/40 border border-rose-900/50 text-rose-400 font-bold px-4 py-3 rounded-xl text-xs uppercase hidden"><i class="fa-solid fa-trash mr-1"></i> Eliminar</button>
+                <div class="flex gap-3 ml-auto">
+                    <button onclick="cerrarModalCanto()" class="bg-stone-800 text-stone-300 font-bold px-6 py-3 rounded-xl text-xs uppercase">Cancelar</button>
+                    <button onclick="guardarCanto()" class="btn-primary px-8 py-3 rounded-xl text-xs uppercase transition-all shadow-lg">Guardar en la Nube</button>
+                </div>
             </div>
         </div>
     </div>
@@ -185,64 +196,36 @@
         const canvasCategorias = { entrada:"Entrada", piedad:"Piedad", gloria:"Gloria", salmo:"Salmo", aleluya:"Aleluya", credo:"Credo", ofertorio:"Ofertorio", santo:"Santo", cordero:"Cordero", comunion:"Comunión", postcomunion:"Postcomunión", aviso:"Aviso", salida:"Salida" };
         let biblioteca = [], programa = [], previewIndex = 0, previewSlides = [], colapsados = {};
 
+        function inicializarSincronizacionCloud() {
+            if (!window.dbCloud) { setTimeout(inicializarSincronizacionCloud, 200); return; }
+            
+            const { cantosRef, onSnapshot } = window.dbCloud;
+            onSnapshot(cantosRef, (snapshot) => {
+                biblioteca = [];
+                snapshot.forEach(doc => { biblioteca.push({ id: doc.id, ...doc.data() }); });
+                actualizarBibliotecaUI();
+            });
+        }
+
         window.addEventListener('load', () => {
             const hoy = new Date();
             document.getElementById('pptx-date').value = `${String(hoy.getDate()).padStart(2,'0')}.${String(hoy.getMonth()+1).padStart(2,'0')}.${hoy.getFullYear()}`;
             Object.keys(canvasCategorias).forEach(cat => colapsados[cat] = false);
-            
-            fetch('cantos.txt?v=' + Date.now())
-                .then(response => {
-                    if (!response.ok) throw new Error("No se encontró el archivo.");
-                    return response.text();
-                })
-                .then(texto => {
-                    biblioteca = JSON.parse(texto);
-                    localStorage.setItem('mcm_v21_final', JSON.stringify(biblioteca));
-                    actualizarBibliotecaUI();
-                })
-                .catch(err => {
-                    const localData = localStorage.getItem('mcm_v21_final');
-                    if (localData) biblioteca = JSON.parse(localData);
-                    actualizarBibliotecaUI();
-                });
+            inicializarSincronizacionCloud();
         });
 
-        // NUEVA FUNCIÓN: Abre Google con el título para copiar la letra
         function buscarLetraInternet() {
             const titulo = document.getElementById('modal-input-titulo').value.trim();
-            if (!titulo) {
-                alert("Escribe primero el título del canto para poder buscarlo.");
-                return;
-            }
-            const query = encodeURIComponent(titulo + " letra canto catolico");
-            window.open(`https://www.google.com/search?q=${query}`, '_blank');
-        }
-
-        function cargarCantosTxt(event) {
-            const file = event.target.files[0];
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                try {
-                    const data = JSON.parse(e.target.result);
-                    biblioteca = data; localStorage.setItem('mcm_v21_final', JSON.stringify(biblioteca));
-                    actualizarBibliotecaUI(); alert(`Éxito: ${biblioteca.length} cantos importados.`);
-                } catch (err) { alert(`Error de formato al procesar el archivo de texto.`); }
-            };
-            reader.readAsText(file, 'UTF-8');
-        }
-
-        function exportarCantosTxt() {
-            if (biblioteca.length === 0) return;
-            const blob = new Blob([JSON.stringify(biblioteca, null, 4)], { type: 'text/plain;charset=utf-8' });
-            const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = 'cantos.txt'; link.click();
+            if (!titulo) return alert("Escribe primero el título.");
+            window.open(`https://www.google.com/search?q=${encodeURIComponent(titulo + " letra canto catolico")}`, '_blank');
         }
 
         function renderizarBiblioteca(lista) {
-            const container = document.getElementById('lista-biblioteca');
-            container.innerHTML = '';
+            const container = document.getElementById('lista-biblioteca'); container.innerHTML = '';
             const grupos = {}; Object.keys(canvasCategorias).forEach(cat => grupos[cat] = []);
             lista.forEach(c => { if(grupos[c.categoria]) grupos[c.categoria].push(c); });
             document.getElementById('total-cantos').textContent = biblioteca.length;
+            
             Object.keys(canvasCategorias).forEach(catKey => {
                 let cantos = grupos[catKey]; if (cantos.length === 0) return;
                 cantos.sort((a,b) => a.titulo.localeCompare(b.titulo,'es'));
@@ -252,54 +235,59 @@
                 head.onclick = () => { colapsados[catKey] = !colapsados[catKey]; renderizarBiblioteca(lista); };
                 head.innerHTML = `<span>${canvasCategorias[catKey].toUpperCase()}</span><i class="fa-solid ${isC?'fa-chevron-right':'fa-chevron-down'} text-[9px]"></i>`;
                 container.appendChild(head);
+                
                 if (!isC) cantos.forEach(c => {
                     const card = document.createElement('div');
                     card.className = "bg-stone-900/20 border border-stone-800 p-3 mb-1 rounded-xl flex justify-between items-center group cursor-pointer hover:border-stone-600";
-                    card.onclick = (e) => { if(!e.target.closest('button')) agregarAlPrograma(c); };
+                    card.onclick = () => agregarAlPrograma(c);
                     card.innerHTML = `<div class="truncate text-[13px] font-bold text-stone-300 group-hover:text-white flex-1">${c.titulo}</div><button onclick="abrirModalEditarCanto('${c.id}'); event.stopPropagation();" class="p-2 text-stone-500 hover:text-amber-500"><i class="fa-solid fa-pen text-xs"></i></button>`;
                     container.appendChild(card);
                 });
             });
         }
 
+        function guardarCanto() {
+            const id = document.getElementById('modal-canto-id').value || "c-" + Date.now();
+            const t = document.getElementById('modal-input-titulo').value.trim();
+            const l = document.getElementById('modal-input-letra').value.trim();
+            const c = document.getElementById('modal-input-categoria').value;
+            
+            if(!t || !l) return alert("Rellena título y letra");
+            
+            const { doc, setDoc, db } = window.dbCloud;
+            setDoc(doc(db, "cantos", id), { titulo: t, letra: l, categoria: c })
+                .then(() => { cerrarModalCanto(); })
+                .catch(err => alert("Error al guardar en la nube: " + err));
+        }
+
+        function eliminarCantoCloud() {
+            const id = document.getElementById('modal-canto-id').value;
+            if(!id || !confirm("¿Eliminar permanentemente este canto de la nube?")) return;
+            
+            const { doc, deleteDoc, db } = window.dbCloud;
+            deleteDoc(doc(db, "cantos", id))
+                .then(() => { cerrarModalCanto(); })
+                .catch(err => alert("Error al eliminar: " + err));
+        }
+
         function filtrarBiblioteca() {
             const q = document.getElementById('busqueda').value.toLowerCase().trim();
-            const f = biblioteca.filter(c => c.titulo.toLowerCase().includes(q) || c.letra.toLowerCase().includes(q));
-            renderizarBiblioteca(f);
+            renderizarBiblioteca(biblioteca.filter(c => c.titulo.toLowerCase().includes(q) || c.letra.toLowerCase().includes(q)));
         }
         function actualizarBibliotecaUI() { filtrarBiblioteca(); }
-
         function agregarAlPrograma(c) { programa.push({...c, pId: Date.now()+Math.random()}); actualizarProgramaUI(); }
-        
-        function moverCanto(i, d) { 
-            const n = i+d; 
-            if(n>=0 && n<programa.length) { 
-                const temp = programa[i];
-                programa[i] = programa[n];
-                programa[n] = temp;
-                actualizarProgramaUI(); 
-            }
-        }
+        function moverCanto(i, d) { const n = i+d; if(n>=0 && n<programa.length) { const temp = programa[i]; programa[i] = programa[n]; programa[n] = temp; actualizarProgramaUI(); } }
         function removerDelPrograma(i) { programa.splice(i,1); actualizarProgramaUI(); }
-        function limpiarPrograma() { if(confirm("¿Vaciar lista de proyección?")) { programa = []; actualizarProgramaUI(); } }
+        function limpiarPrograma() { if(confirm("¿Vaciar lista?")) { programa = []; actualizarProgramaUI(); } }
 
         function actualizarProgramaUI() {
-            const container = document.getElementById('lista-programa');
-            container.innerHTML = '';
-            if (programa.length === 0) { container.innerHTML = `<div class="h-full flex items-center justify-center text-stone-600 text-xs italic">Lista de proyección vacía.</div>`; return; }
+            const container = document.getElementById('lista-programa'); container.innerHTML = '';
+            if (programa.length === 0) { container.innerHTML = `<div class="h-full flex items-center justify-center text-stone-600 text-xs italic">Lista vacía.</div>`; return; }
             programa.forEach((c, i) => {
                 const div = document.createElement('div');
-                div.className = "bg-black/40 border border-stone-800 p-3 rounded-xl flex justify-between items-center gap-3 group";
-                div.innerHTML = `
-                <div class="flex items-center gap-2 truncate flex-1">
-                    <span class="text-xs font-black text-amber-500 bg-amber-500/10 px-2 py-0.5 rounded">#${i+1}</span>
-                    <div class="truncate text-[13px] font-bold uppercase text-stone-200">${c.titulo}</div>
-                </div>
-                <div class="flex gap-1 items-center move-controls">
-                    <button onclick="moverCanto(${i},-1)" class="p-2 text-stone-400 hover:text-white"><i class="fa-solid fa-arrow-up text-xs"></i></button>
-                    <button onclick="moverCanto(${i},1)" class="p-2 text-stone-400 hover:text-white"><i class="fa-solid fa-arrow-down text-xs"></i></button>
-                    <button onclick="removerDelPrograma(${i})" class="p-2 text-stone-500 hover:text-rose-500 ml-1"><i class="fa-solid fa-xmark text-sm"></i></button>
-                </div>`;
+                div.className = "bg-black/40 border border-stone-800 p-3 rounded-xl flex justify-between items-center gap-3";
+                div.innerHTML = `<div class="flex items-center gap-2 truncate flex-1"><span class="text-xs font-black text-amber-500 bg-amber-500/10 px-2 py-0.5 rounded">#${i+1}</span><div class="truncate text-[13px] font-bold uppercase text-stone-200">${c.titulo}</div></div>
+                <div class="flex gap-1 items-center"><button onclick="moverCanto(${i},-1)" class="p-2 text-stone-400"><i class="fa-solid fa-arrow-up text-xs"></i></button><button onclick="moverCanto(${i},1)" class="p-2 text-stone-400"><i class="fa-solid fa-arrow-down text-xs"></i></button><button onclick="removerDelPrograma(${i})" class="p-2 text-stone-500"><i class="fa-solid fa-xmark text-sm"></i></button></div>`;
                 container.appendChild(div);
             });
             actualizarPreview();
@@ -315,8 +303,7 @@
         }
 
         function actualizarPreview() {
-            previewSlides = compilarSlides();
-            const content = document.getElementById('preview-content');
+            previewSlides = compilarSlides(); const content = document.getElementById('preview-content');
             if (previewSlides.length === 0) { document.getElementById('preview-contador').textContent = "0/0"; content.innerHTML = ""; return; }
             if (previewIndex >= previewSlides.length) previewIndex = previewSlides.length-1;
             document.getElementById('preview-contador').textContent = `${previewIndex+1}/${previewSlides.length}`;
@@ -331,17 +318,23 @@
         }
 
         function cambiarSlidePreview(d) { const n = previewIndex + d; if(n>=0 && n<previewSlides.length) { previewIndex = n; actualizarPreview(); } }
-        function abrirModalNuevoCanto() { document.getElementById('modal-canto-id').value=""; document.getElementById('modal-input-titulo').value=""; document.getElementById('modal-input-letra').value=""; document.getElementById('modal-canto').classList.remove('hidden'); }
-        function abrirModalEditarCanto(id) { const c = biblioteca.find(x => x.id === id); if(c) { document.getElementById('modal-canto-id').value=c.id; document.getElementById('modal-input-titulo').value=c.titulo; document.getElementById('modal-input-letra').value=c.letra; document.getElementById('modal-input-categoria').value=c.categoria; document.getElementById('modal-canto').classList.remove('hidden'); } }
-        function cerrarModalCanto() { document.getElementById('modal-canto').classList.add('hidden'); }
         
-        function guardarCanto() {
-            const id = document.getElementById('modal-canto-id').value, t = document.getElementById('modal-input-titulo').value.trim(), l = document.getElementById('modal-input-letra').value.trim(), c = document.getElementById('modal-input-categoria').value;
-            if(!t || !l) return;
-            if(id) { const i = biblioteca.findIndex(x=>x.id===id); biblioteca[i]={id,titulo:t,letra:l,categoria:c}; }
-            else biblioteca.push({id:"c-"+Date.now(),titulo:t,letra:l,categoria:c});
-            localStorage.setItem('mcm_v21_final', JSON.stringify(biblioteca)); actualizarBibliotecaUI(); cerrarModalCanto();
+        function abrirModalNuevoCanto() { 
+            document.getElementById('modal-canto-id').value=""; document.getElementById('modal-input-titulo').value=""; document.getElementById('modal-input-letra').value=""; 
+            document.getElementById('btn-eliminar-cloud').classList.add('hidden');
+            document.getElementById('modal-canto').classList.remove('hidden'); 
         }
+        
+        function abrirModalEditarCanto(id) { 
+            const c = biblioteca.find(x => x.id === id); 
+            if(c) { 
+                document.getElementById('modal-canto-id').value=c.id; document.getElementById('modal-input-titulo').value=c.titulo; document.getElementById('modal-input-letra').value=c.letra; document.getElementById('modal-input-categoria').value=c.categoria; 
+                document.getElementById('btn-eliminar-cloud').classList.remove('hidden');
+                document.getElementById('modal-canto').classList.remove('hidden'); 
+            } 
+        }
+        
+        function cerrarModalCanto() { document.getElementById('modal-canto').classList.add('hidden'); }
 
         function generarPowerPoint() {
             if (programa.length === 0) return;
