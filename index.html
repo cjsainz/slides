@@ -12,7 +12,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/gh/gitbrent/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
 
@@ -31,162 +31,166 @@ const firebaseConfig = {
   measurementId: "G-DTE3G8GZ25"
 };
 
-      // Inicializar conexión con la nube
       const app = initializeApp(firebaseConfig);
       const db = getFirestore(app);
       const cantosRef = collection(db, "cantos");
 
-      // Hacer funciones accesibles globalmente
       window.dbCloud = { db, cantosRef, onSnapshot, doc, setDoc, deleteDoc };
     </script>
 
     <style>
-        :root { --accent-color: #FFCC00; --bg-dark: #0c0c0c; --panel-bg: #161616; --border-color: #2a2a2a; }
-        body { background-color: var(--bg-dark); color: #f3f3f3; font-family: 'Inter', sans-serif; overflow-x: hidden; }
+        :root { --accent-color: #FFCC00; --bg-dark: #0c0c0c; --border-color: #262626; }
+        body { background-color: var(--bg-dark); color: #f3f3f3; font-family: 'Inter', sans-serif; }
         h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
-        .slide-preview { background-color: #000; aspect-ratio: 16 / 9; box-shadow: 0 20px 50px rgba(0,0,0,0.9); border: 1px solid var(--border-color); position: relative; font-family: Arial, sans-serif; }
-        .custom-scroll::-webkit-scrollbar { width: 5px; }
+        .slide-preview { background-color: #000; aspect-ratio: 16 / 9; box-shadow: 0 20px 40px rgba(0,0,0,0.8); border: 1px solid var(--border-color); position: relative; }
+        .custom-scroll::-webkit-scrollbar { width: 6px; }
         .custom-scroll::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
-        .form-select, .form-input { background-color: #000; border: 1px solid var(--border-color); color: #fff; font-size: 14px; padding: 10px 12px; border-radius: 8px; width: 100%; outline: none; }
-        .form-select:focus, .form-input:focus { border-color: var(--accent-color); }
-        .btn-primary { background-color: var(--accent-color); color: #000; font-weight: 800; }
-        .move-controls { opacity: 0.8; }
-
+        
+        /* Forzado de interfaces legibles en inputs */
+        .form-select, .form-input { background-color: #000; border: 1px solid var(--border-color); color: #fff; border-radius: 12px; width: 100%; outline: none; transition: all 0.2s; }
+        .form-select:focus, .form-input:focus { border-color: var(--accent-color); box-shadow: 0 0 0 2px rgba(255,204,0,0.2); }
+        
+        /* Optimizaciones táctiles agresivas para móviles */
         @media (max-width: 1024px) {
-            body { font-size: 16px; }
-            .form-select, .form-input { font-size: 16px !important; padding: 12px !important; }
-            button, .btn-primary { padding: 12px 16px !important; font-size: 14px !important; }
-            section.sticky { position: relative !important; top: 0 !important; height: auto !important; max-height: 500px; }
+            html { font-size: 16px; }
+            .form-input, .form-select { font-size: 18px !important; padding: 14px 16px !important; }
+            button { min-height: 48px; }
+            /* Eliminamos el bloqueo sticky en móvil para evitar que las listas colapsen a mini-píxeles */
+            .mobile-stack { position: relative !important; top: 0 !important; height: auto !important; max-height: none !important; }
         }
     </style>
 </head>
-<body class="min-h-screen pb-12">
+<body class="min-h-screen pb-24">
 
-    <header class="border-b border-stone-800 bg-stone-950/90 backdrop-blur py-5 px-4 sm:px-8 mb-6 sticky top-0 z-50">
-        <div class="max-w-[1600px] mx-auto flex flex-col xl:flex-row justify-between items-center gap-6">
-            <div class="flex items-center gap-4 text-center sm:text-left flex-col sm:flex-row">
-                <div class="text-4xl text-amber-500"><i class="fa-solid fa-cross"></i></div>
+    <header class="border-b border-neutral-800 bg-neutral-950/80 backdrop-blur-md py-4 px-4 sm:px-6 sticky top-0 z-50">
+        <div class="max-w-[1600px] mx-auto flex flex-col lg:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-3 text-center sm:text-left flex-col sm:flex-row w-full lg:w-auto">
+                <div class="text-3xl text-amber-500"><i class="fa-solid fa-cross"></i></div>
                 <div>
-                    <h1 class="text-2xl font-black tracking-tighter text-white uppercase leading-none">Gestor slides coro MCLE <span class="text-xs text-amber-500 font-normal lowercase bg-amber-500/10 px-2 py-1 rounded ml-2">Cloud Live</span></h1>
-                    <p class="text-[11px] tracking-[0.2em] text-stone-500 font-bold uppercase mt-1">Misión de Lengua Española • Archidiócesis de Múnich</p>
+                    <h1 class="text-xl sm:text-2xl font-black tracking-tight text-white uppercase leading-none">Gestor slides coro MCLE</h1>
+                    <p class="text-[10px] tracking-[0.15em] text-neutral-500 font-bold uppercase mt-1">Misión Española • Múnich</p>
                 </div>
             </div>
             
-            <div class="flex flex-wrap items-center gap-4 justify-center xl:justify-end w-full xl:w-auto">
-                <div class="relative w-[46%] sm:w-40">
-                    <label class="text-[9px] font-black uppercase text-stone-500 absolute -top-4 left-1">Misa</label>
-                    <input type="text" id="pptx-filename" value="Misa_Domingo" oninput="actualizarPreview()" class="bg-stone-950 border border-stone-800 rounded-lg px-3 py-2.5 text-xs text-white w-full font-bold outline-none">
+            <div class="flex flex-wrap items-center gap-3 justify-center lg:justify-end w-full lg:w-auto">
+                <div class="relative flex-1 min-w-[130px] sm:flex-none sm:w-44">
+                    <label class="text-[9px] font-black uppercase text-neutral-400 absolute -top-2.5 left-2 bg-neutral-950 px-1 z-10">Nombre Misa</label>
+                    <input type="text" id="pptx-filename" value="Misa_Domingo" oninput="actualizarPreview()" class="form-input px-3 py-2 text-sm font-bold">
                 </div>
-                <div class="relative w-[46%] sm:w-32">
-                    <label class="text-[9px] font-black uppercase text-stone-500 absolute -top-4 left-1">Fecha</label>
-                    <input type="text" id="pptx-date" oninput="actualizarPreview()" class="bg-stone-950 border border-stone-800 rounded-lg px-3 py-2.5 text-xs text-white w-full font-bold outline-none">
+                <div class="relative flex-1 min-w-[100px] sm:flex-none sm:w-32">
+                    <label class="text-[9px] font-black uppercase text-neutral-400 absolute -top-2.5 left-2 bg-neutral-950 px-1 z-10">Fecha</label>
+                    <input type="text" id="pptx-date" oninput="actualizarPreview()" class="form-input px-3 py-2 text-sm font-bold text-center">
                 </div>
-                <button onclick="generarPowerPoint()" class="btn-primary px-6 py-3.5 rounded-xl flex items-center justify-center gap-2 text-xs shadow-lg active:scale-95 transition-all w-full sm:w-auto">
+                <button onclick="generarPowerPoint()" class="w-full sm:w-auto bg-[#FFCC00] hover:bg-amber-500 text-neutral-950 font-black px-6 py-3 rounded-xl flex items-center justify-center gap-2 text-sm shadow-xl active:scale-95 transition-all">
                     <i class="fa-solid fa-file-powerpoint text-base"></i> GENERAR PPTX
                 </button>
             </div>
         </div>
     </header>
 
-    <main class="max-w-[1600px] mx-auto px-4 sm:px-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+    <main class="max-w-[1600px] mx-auto px-4 mt-4 grid grid-cols-1 lg:grid-cols-12 gap-6">
         
-        <section class="lg:col-span-4 xl:col-span-3 bg-stone-900/30 border border-stone-800 rounded-3xl p-5 flex flex-col h-[550px] lg:h-[calc(100vh-160px)] sticky top-28">
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="text-sm font-black text-white uppercase"><i class="fa-solid fa-cloud text-amber-500"></i> Nube (<span id="total-cantos">0</span>)</h2>
-                <button onclick="abrirModalNuevoCanto()" class="bg-amber-500/10 text-amber-500 px-4 py-2 rounded-xl text-[11px] font-black border border-amber-500/30 active:scale-95 transition-all">+ AÑADIR</button>
+        <section class="mobile-stack lg:col-span-4 xl:col-span-4 bg-neutral-900/40 border border-neutral-800 rounded-2xl p-4 flex flex-col h-[600px] lg:h-[calc(100vh-140px)] lg:sticky lg:top-24">
+            <div class="flex justify-between items-center mb-3">
+                <h2 class="text-base font-black text-white uppercase tracking-wide"><i class="fa-solid fa-cloud text-amber-500 mr-1"></i> Cantoral (<span id="total-cantos">0</span>)</h2>
+                <button onclick="abrirModalNuevoCanto()" class="bg-amber-500 text-neutral-950 px-4 py-2 rounded-xl text-xs font-black active:scale-95 transition-all shadow-md shadow-amber-500/10">+ AÑADIR</button>
             </div>
-            <input type="text" id="busqueda" oninput="filtrarBiblioteca()" placeholder="Buscar canto o letra..." class="w-full bg-stone-950 border border-stone-800 rounded-xl px-4 py-3 text-sm text-stone-200 outline-none mb-4">
+            <div class="relative mb-3">
+                <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-neutral-500 text-base"></i>
+                <input type="text" id="busqueda" oninput="filtrarBiblioteca()" placeholder="Buscar canto o letra..." class="w-full bg-black border border-neutral-800 rounded-xl pl-11 pr-4 py-3 text-base text-white outline-none">
+            </div>
             <div class="flex-grow overflow-y-auto space-y-2 pr-1 custom-scroll" id="lista-biblioteca">
-                <div class="text-stone-500 text-xs text-center p-4">Conectando con la nube...</div>
+                <div class="text-neutral-500 text-sm text-center p-4 italic">Conectando a la nube...</div>
             </div>
         </section>
 
-        <section class="lg:col-span-8 xl:col-span-9 flex flex-col gap-6">
-            <div class="bg-stone-900/30 border border-stone-800 rounded-3xl p-5">
-                <h3 class="text-[11px] font-black text-stone-400 uppercase mb-4 italic"><i class="fa-solid fa-sliders text-amber-500"></i> Formato de Proyección</h3>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
-                    <div class="bg-black/40 p-4 rounded-2xl border border-stone-800">
-                        <p class="text-[10px] font-black text-amber-500 mb-3">PORTADA</p>
+        <section class="lg:col-span-8 xl:col-span-8 flex flex-col gap-6">
+            
+            <div class="bg-neutral-900/40 border border-neutral-800 rounded-2xl p-4">
+                <h3 class="text-xs font-black text-neutral-400 uppercase mb-3 tracking-wider"><i class="fa-solid fa-sliders text-amber-500 mr-1"></i> Tamaños en Diapositivas (PPTX)</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-center">
+                    <div class="bg-black/60 p-3 rounded-xl border border-neutral-800/60">
+                        <p class="text-[10px] font-black text-amber-500 mb-2 tracking-widest">PORTADA</p>
                         <div class="flex gap-2 mb-2">
-                            <input type="number" id="size-cover-title" value="58" class="form-input" onchange="actualizarPreview()">
-                            <input type="number" id="size-cover-sub" value="28" class="form-input" onchange="actualizarPreview()">
+                            <input type="number" id="size-cover-title" value="58" class="form-input text-center py-1.5" onchange="actualizarPreview()">
+                            <input type="number" id="size-cover-sub" value="28" class="form-input text-center py-1.5" onchange="actualizarPreview()">
                         </div>
-                        <select id="align-cover" class="form-select" onchange="actualizarPreview()"><option value="center" selected>Centrado</option><option value="left">Izquierda</option></select>
+                        <select id="align-cover" class="form-select py-1.5" onchange="actualizarPreview()"><option value="center" selected>Centrado</option><option value="left">Izquierda</option></select>
                     </div>
-                    <div class="bg-black/40 p-4 rounded-2xl border border-stone-800">
-                        <p class="text-[10px] font-black text-amber-500 mb-3">TÍTULOS CANTOS</p>
-                        <input type="number" id="size-song-title" value="42" class="form-input mb-2" onchange="actualizarPreview()">
-                        <select id="align-song-title" class="form-select" onchange="actualizarPreview()"><option value="center" selected>Centrado</option><option value="left">Izquierda</option></select>
+                    <div class="bg-black/60 p-3 rounded-xl border border-neutral-800/60">
+                        <p class="text-[10px] font-black text-amber-500 mb-2 tracking-widest">TÍTULOS</p>
+                        <input type="number" id="size-song-title" value="42" class="form-input text-center py-1.5 mb-2" onchange="actualizarPreview()">
+                        <select id="align-song-title" class="form-select py-1.5" onchange="actualizarPreview()"><option value="center" selected>Centrado</option><option value="left">Izquierda</option></select>
                     </div>
-                    <div class="bg-black/40 p-4 rounded-2xl border border-stone-800">
-                        <p class="text-[10px] font-black text-amber-500 mb-3">TEXTO CANTOS</p>
-                        <input type="number" id="size-lyric-body" value="52" class="form-input mb-2" onchange="actualizarPreview()">
-                        <select id="align-lyric-body" class="form-select" onchange="actualizarPreview()"><option value="center" selected>Centrado</option><option value="left">Izquierda</option></select>
+                    <div class="bg-black/60 p-3 rounded-xl border border-neutral-800/60">
+                        <p class="text-[10px] font-black text-amber-500 mb-2 tracking-widest">LETRAS</p>
+                        <input type="number" id="size-lyric-body" value="52" class="form-input text-center py-1.5 mb-2" onchange="actualizarPreview()">
+                        <select id="align-lyric-body" class="form-select py-1.5" onchange="actualizarPreview()"><option value="center" selected>Centrado</option><option value="left">Izquierda</option></select>
                     </div>
                 </div>
             </div>
 
             <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
-                <div class="bg-stone-900/30 border border-stone-800 rounded-3xl p-5 h-[420px] flex flex-col">
-                    <div class="flex justify-between items-center mb-4">
-                        <h2 class="text-xs font-black text-white uppercase">Lista de Proyección</h2>
-                        <button onclick="limpiarPrograma()" class="text-xs font-bold text-rose-500 bg-rose-500/10 px-2 py-1 rounded-lg">VACIAR</button>
+                <div class="bg-neutral-900/40 border border-neutral-800 rounded-2xl p-4 h-[450px] flex flex-col">
+                    <div class="flex justify-between items-center mb-3">
+                        <h2 class="text-sm font-black text-white uppercase tracking-wide">Lista de Misa Dominicana</h2>
+                        <button onclick="limpiarPrograma()" class="text-xs font-bold text-rose-400 bg-rose-500/10 px-3 py-1.5 rounded-lg border border-rose-500/20">VACIAR</button>
                     </div>
                     <div class="flex-grow overflow-y-auto space-y-2 pr-1 custom-scroll" id="lista-programa"></div>
                 </div>
                 
-                <div class="bg-stone-900/30 border border-stone-800 rounded-3xl p-5 h-[420px] flex flex-col">
-                    <div class="flex justify-between items-center mb-4">
-                        <h3 class="text-xs font-black text-white uppercase"><i class="fa-solid fa-desktop text-amber-500 mr-1"></i> Monitor de Sala</h3>
-                        <div class="flex gap-2 items-center">
-                            <button onclick="cambiarSlidePreview(-1)" class="w-9 h-9 rounded-xl bg-stone-950 border border-stone-800 flex items-center justify-center active:scale-90 transition-all"><i class="fa-solid fa-chevron-left text-xs"></i></button>
-                            <span id="preview-contador" class="text-xs font-bold px-1">0/0</span>
-                            <button onclick="cambiarSlidePreview(1)" class="w-9 h-9 rounded-xl bg-stone-950 border border-stone-800 flex items-center justify-center active:scale-90 transition-all"><i class="fa-solid fa-chevron-right text-xs"></i></button>
+                <div class="bg-neutral-900/40 border border-neutral-800 rounded-2xl p-4 h-[450px] flex flex-col">
+                    <div class="flex justify-between items-center mb-3">
+                        <h3 class="text-sm font-black text-white uppercase tracking-wide"><i class="fa-solid fa-desktop text-amber-500 mr-1"></i> Monitor de Proyector</h3>
+                        <div class="flex gap-1 items-center">
+                            <button onclick="cambiarSlidePreview(-1)" class="w-10 h-10 rounded-xl bg-black border border-neutral-800 flex items-center justify-center active:scale-90"><i class="fa-solid fa-chevron-left text-sm"></i></button>
+                            <span id="preview-contador" class="text-xs font-bold px-2 text-neutral-400">0/0</span>
+                            <button onclick="cambiarSlidePreview(1)" class="w-10 h-10 rounded-xl bg-black border border-neutral-800 flex items-center justify-center active:scale-90"><i class="fa-solid fa-chevron-right text-sm"></i></button>
                         </div>
                     </div>
-                    <div class="slide-preview rounded-2xl flex-grow overflow-hidden flex flex-col justify-center p-4 text-center" id="preview-content"></div>
+                    <div class="slide-preview rounded-xl flex-grow overflow-hidden flex flex-col justify-center p-4 text-center bg-black" id="preview-content"></div>
                 </div>
             </div>
         </section>
     </main>
 
-    <div id="modal-canto" class="fixed inset-0 bg-black/95 backdrop-blur-xl z-[100] flex items-center justify-center p-3 sm:p-6 hidden overflow-y-auto">
-        <div class="bg-stone-900 border border-stone-800 w-full max-w-3xl rounded-[2rem] overflow-hidden my-auto">
-            <div class="px-6 py-4 sm:px-10 sm:py-6 border-b border-stone-800/50 flex justify-between items-center">
-                <h3 class="text-base sm:text-lg font-black text-white uppercase">Editor de Canto (Nube)</h3>
-                <button onclick="cerrarModalCanto()" class="text-stone-500 hover:text-white text-2xl p-2"><i class="fa-solid fa-xmark"></i></button>
+    <div id="modal-canto" class="fixed inset-0 bg-black/95 backdrop-blur-md z-[100] flex items-center justify-center p-4 hidden overflow-y-auto">
+        <div class="bg-neutral-900 border border-neutral-800 w-full max-w-2xl rounded-2xl overflow-hidden my-auto shadow-2xl">
+            <div class="px-5 py-4 border-b border-neutral-800 flex justify-between items-center">
+                <h3 class="text-base font-black text-white uppercase tracking-wide">Editor de Canto (Nube Live)</h3>
+                <button onclick="cerrarModalCanto()" class="text-neutral-400 hover:text-white text-2xl p-2"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <div class="p-6 sm:p-10 space-y-4 sm:space-y-6">
+            <div class="p-5 space-y-4">
                 <input type="hidden" id="modal-canto-id">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:grid-cols-3">
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <div>
-                        <label class="text-[10px] font-black text-stone-500 uppercase block mb-1.5">Categoría</label>
-                        <select id="modal-input-categoria" class="w-full bg-black border border-stone-800 rounded-xl px-4 py-3 text-sm text-white outline-none font-bold">
+                        <label class="text-[10px] font-black text-neutral-400 uppercase block mb-1">Liturgia / Categoría</label>
+                        <select id="modal-input-categoria" class="form-select py-3 font-bold text-base">
                             <option value="entrada">Entrada</option><option value="piedad">Piedad</option><option value="gloria">Gloria</option><option value="salmo">Salmo</option>
                             <option value="aleluya">Aleluya</option><option value="credo">Credo</option><option value="ofertorio">Ofertorio</option><option value="santo">Santo</option>
                             <option value="cordero">Cordero</option><option value="comunion">Comunión</option><option value="postcomunion">Postcomunión</option><option value="aviso">Aviso</option><option value="salida">Salida</option>
                         </select>
                     </div>
-                    <div class="md:col-span-2">
-                        <label class="text-[10px] font-black text-stone-500 uppercase block mb-1.5">Título del Canto</label>
+                    <div class="sm:col-span-2">
+                        <label class="text-[10px] font-black text-neutral-400 uppercase block mb-1">Título del Canto</label>
                         <div class="flex gap-2">
-                            <input type="text" id="modal-input-titulo" class="w-full bg-black border border-stone-800 rounded-xl px-4 py-3 text-sm text-white font-bold outline-none flex-grow">
-                            <button onclick="buscarLetraInternet()" class="bg-stone-800 hover:bg-stone-700 text-amber-500 px-4 rounded-xl border border-stone-700 active:scale-95 transition-all flex items-center gap-2 font-bold text-xs">
-                                <i class="fa-solid fa-magnifying-glass"></i> <span class="hidden sm:inline">BUSCAR</span>
+                            <input type="text" id="modal-input-titulo" class="form-input py-3 font-bold text-base flex-grow">
+                            <button onclick="buscarLetraInternet()" class="bg-neutral-800 hover:bg-neutral-700 text-amber-500 px-4 rounded-xl border border-neutral-700 active:scale-95 flex items-center gap-2 font-bold text-sm shrink-0">
+                                <i class="fa-solid fa-magnifying-glass text-base"></i> <span class="hidden sm:inline">BUSCAR</span>
                             </button>
                         </div>
                     </div>
                 </div>
                 <div>
-                    <label class="text-[10px] font-black text-stone-500 uppercase block mb-1.5">Letra (Doble Intro para separar Diapositivas)</label>
-                    <textarea id="modal-input-letra" rows="7" class="w-full bg-black border border-stone-800 rounded-2xl px-4 py-4 text-sm text-white font-mono outline-none" placeholder="Estrofa 1..."></textarea>
+                    <label class="text-[10px] font-black text-neutral-400 uppercase block mb-1">Letra (Usa un Doble Intro para separar entre diapositivas)</label>
+                    <textarea id="modal-input-letra" rows="8" class="w-full bg-black border border-neutral-800 rounded-xl px-4 py-3 text-base sm:text-lg text-white font-sans outline-none leading-relaxed" placeholder="Escribe la letra aquí..."></textarea>
                 </div>
             </div>
-            <div class="bg-black/50 px-6 py-4 sm:px-10 sm:py-6 flex justify-between gap-3">
-                <button id="btn-eliminar-cloud" onclick="eliminarCantoCloud()" class="bg-rose-950/40 border border-rose-900/50 text-rose-400 font-bold px-4 py-3 rounded-xl text-xs uppercase hidden"><i class="fa-solid fa-trash mr-1"></i> Eliminar</button>
-                <div class="flex gap-3 ml-auto">
-                    <button onclick="cerrarModalCanto()" class="bg-stone-800 text-stone-300 font-bold px-6 py-3 rounded-xl text-xs uppercase">Cancelar</button>
-                    <button onclick="guardarCanto()" class="btn-primary px-8 py-3 rounded-xl text-xs uppercase transition-all shadow-lg">Guardar en la Nube</button>
+            <div class="bg-black/40 px-5 py-4 flex justify-between items-center gap-3">
+                <button id="btn-eliminar-cloud" onclick="eliminarCantoCloud()" class="bg-rose-950/60 border border-rose-900 text-rose-400 font-bold px-4 py-3 rounded-xl text-xs uppercase hidden"><i class="fa-solid fa-trash mr-1"></i> Eliminar</button>
+                <div class="flex gap-3 ml-auto w-full sm:w-auto">
+                    <button onclick="cerrarModalCanto()" class="flex-1 sm:flex-none bg-neutral-800 text-neutral-300 font-bold px-5 py-3 rounded-xl text-xs uppercase">Cancelar</button>
+                    <button onclick="guardarCanto()" class="flex-1 sm:flex-none bg-[#FFCC00] text-neutral-950 font-black px-6 py-3 rounded-xl text-xs uppercase shadow-lg shadow-amber-500/10">Guardar en Nube</button>
                 </div>
             </div>
         </div>
@@ -197,8 +201,7 @@ const firebaseConfig = {
         let biblioteca = [], programa = [], previewIndex = 0, previewSlides = [], colapsados = {};
 
         function inicializarSincronizacionCloud() {
-            if (!window.dbCloud) { setTimeout(inicializarSincronizacionCloud, 200); return; }
-            
+            if (!window.dbCloud) { setTimeout(inicializarSincronizacionCloud, 150); return; }
             const { cantosRef, onSnapshot } = window.dbCloud;
             onSnapshot(cantosRef, (snapshot) => {
                 biblioteca = [];
@@ -230,17 +233,23 @@ const firebaseConfig = {
                 let cantos = grupos[catKey]; if (cantos.length === 0) return;
                 cantos.sort((a,b) => a.titulo.localeCompare(b.titulo,'es'));
                 const isC = colapsados[catKey];
+                
                 const head = document.createElement('div');
-                head.className = "text-[11px] font-black text-stone-200 px-3 py-3 rounded-xl mt-2 border-l-4 border-amber-500 bg-stone-900/50 flex justify-between items-center cursor-pointer";
+                head.className = "text-xs font-black text-neutral-300 px-3 py-3.5 rounded-xl mt-2 border-l-4 border-amber-500 bg-neutral-900 flex justify-between items-center cursor-pointer select-none active:bg-neutral-800";
                 head.onclick = () => { colapsados[catKey] = !colapsados[catKey]; renderizarBiblioteca(lista); };
-                head.innerHTML = `<span>${canvasCategorias[catKey].toUpperCase()}</span><i class="fa-solid ${isC?'fa-chevron-right':'fa-chevron-down'} text-[9px]"></i>`;
+                head.innerHTML = `<span>${canvasCategorias[catKey].toUpperCase()}</span><i class="fa-solid ${isC?'fa-chevron-right':'fa-chevron-down'} text-[10px] text-amber-500"></i>`;
                 container.appendChild(head);
                 
                 if (!isC) cantos.forEach(c => {
                     const card = document.createElement('div');
-                    card.className = "bg-stone-900/20 border border-stone-800 p-3 mb-1 rounded-xl flex justify-between items-center group cursor-pointer hover:border-stone-600";
+                    card.className = "bg-neutral-950 border border-neutral-800/80 p-3.5 mb-1.5 rounded-xl flex justify-between items-center gap-3 cursor-pointer hover:border-neutral-600 active:bg-neutral-900";
                     card.onclick = () => agregarAlPrograma(c);
-                    card.innerHTML = `<div class="truncate text-[13px] font-bold text-stone-300 group-hover:text-white flex-1">${c.titulo}</div><button onclick="abrirModalEditarCanto('${c.id}'); event.stopPropagation();" class="p-2 text-stone-500 hover:text-amber-500"><i class="fa-solid fa-pen text-xs"></i></button>`;
+                    card.innerHTML = `
+                        <div class="truncate text-[15px] font-bold text-neutral-200 flex-1 leading-snug">${c.titulo}</div>
+                        <button onclick="abrirModalEditarCanto('${c.id}'); event.stopPropagation();" class="p-2.5 text-neutral-500 hover:text-amber-500 active:scale-90 shrink-0">
+                            <i class="fa-solid fa-pen text-base"></i>
+                        </button>
+                    `;
                     container.appendChild(card);
                 });
             });
@@ -251,23 +260,21 @@ const firebaseConfig = {
             const t = document.getElementById('modal-input-titulo').value.trim();
             const l = document.getElementById('modal-input-letra').value.trim();
             const c = document.getElementById('modal-input-categoria').value;
-            
             if(!t || !l) return alert("Rellena título y letra");
             
             const { doc, setDoc, db } = window.dbCloud;
             setDoc(doc(db, "cantos", id), { titulo: t, letra: l, categoria: c })
                 .then(() => { cerrarModalCanto(); })
-                .catch(err => alert("Error al guardar en la nube: " + err));
+                .catch(err => alert("Error en la nube: " + err));
         }
 
         function eliminarCantoCloud() {
             const id = document.getElementById('modal-canto-id').value;
-            if(!id || !confirm("¿Eliminar permanentemente este canto de la nube?")) return;
-            
+            if(!id || !confirm("¿Eliminar este canto de la nube para siempre?")) return;
             const { doc, deleteDoc, db } = window.dbCloud;
             deleteDoc(doc(db, "cantos", id))
                 .then(() => { cerrarModalCanto(); })
-                .catch(err => alert("Error al eliminar: " + err));
+                .catch(err => alert("Error: " + err));
         }
 
         function filtrarBiblioteca() {
@@ -282,12 +289,20 @@ const firebaseConfig = {
 
         function actualizarProgramaUI() {
             const container = document.getElementById('lista-programa'); container.innerHTML = '';
-            if (programa.length === 0) { container.innerHTML = `<div class="h-full flex items-center justify-center text-stone-600 text-xs italic">Lista vacía.</div>`; return; }
+            if (programa.length === 0) { container.innerHTML = `<div class="h-full flex items-center justify-center text-neutral-600 text-sm italic p-4">Ningún canto seleccionado aún.</div>`; return; }
             programa.forEach((c, i) => {
                 const div = document.createElement('div');
-                div.className = "bg-black/40 border border-stone-800 p-3 rounded-xl flex justify-between items-center gap-3";
-                div.innerHTML = `<div class="flex items-center gap-2 truncate flex-1"><span class="text-xs font-black text-amber-500 bg-amber-500/10 px-2 py-0.5 rounded">#${i+1}</span><div class="truncate text-[13px] font-bold uppercase text-stone-200">${c.titulo}</div></div>
-                <div class="flex gap-1 items-center"><button onclick="moverCanto(${i},-1)" class="p-2 text-stone-400"><i class="fa-solid fa-arrow-up text-xs"></i></button><button onclick="moverCanto(${i},1)" class="p-2 text-stone-400"><i class="fa-solid fa-arrow-down text-xs"></i></button><button onclick="removerDelPrograma(${i})" class="p-2 text-stone-500"><i class="fa-solid fa-xmark text-sm"></i></button></div>`;
+                div.className = "bg-neutral-950 border border-neutral-800 p-3 rounded-xl flex justify-between items-center gap-2";
+                div.innerHTML = `
+                <div class="flex items-center gap-2 truncate flex-1">
+                    <span class="text-[11px] font-black text-amber-500 bg-amber-500/10 px-2 py-1 rounded">#${i+1}</span>
+                    <div class="truncate text-[14px] font-bold uppercase tracking-tight text-neutral-200">${c.titulo}</div>
+                </div>
+                <div class="flex gap-1 items-center shrink-0">
+                    <button onclick="moverCanto(${i},-1)" class="p-2 text-neutral-400 hover:text-white"><i class="fa-solid fa-arrow-up text-sm"></i></button>
+                    <button onclick="moverCanto(${i},1)" class="p-2 text-neutral-400 hover:text-white"><i class="fa-solid fa-arrow-down text-sm"></i></button>
+                    <button onclick="removerDelPrograma(${i})" class="p-2 text-neutral-500 hover:text-rose-400 ml-1"><i class="fa-solid fa-xmark text-base"></i></button>
+                </div>`;
                 container.appendChild(div);
             });
             actualizarPreview();
@@ -310,30 +325,16 @@ const firebaseConfig = {
             const s = previewSlides[previewIndex]; content.innerHTML = '';
             if (s.tipo === 'portada') {
                 const szT = document.getElementById('size-cover-title').value, szS = document.getElementById('size-cover-sub').value, al = document.getElementById('align-cover').value;
-                content.innerHTML = `<div style="text-align:${al}; font-weight:bold; width: 100%;"><h2 style="font-size:${szT/2.5}px; color:#fff;">${s.t}</h2><p style="font-size:${szS/2.5}px; margin:6px 0; color:#fff;">${s.f}</p><p style="font-size:${szS/2.5}px; color:#aaa; font-weight:500;">Misión Católica de Lengua Española de Múnich<br>Archidiócesis de Múnich y Freising</p></div>`;
+                content.innerHTML = `<div style="text-align:${al}; font-weight:bold; width: 100%;"><h2 style="font-size:${szT/2.5}px; color:#fff;">${s.t}</h2><p style="font-size:${szS/2.5}px; margin:4px 0; color:#fff;">${s.f}</p><p style="font-size:${szS/2.5}px; color:#aaa; font-weight:500;">Misión Católica de Lengua Española de Múnich</p></div>`;
             } else if (s.tipo === 'canto') {
                 const szST = document.getElementById('size-song-title').value, szB = document.getElementById('size-lyric-body').value, alT = document.getElementById('align-song-title').value, alB = document.getElementById('align-lyric-body').value;
                 content.innerHTML = `<div style="font-weight:bold; width:100%; height:100%; position:relative;">${s.esP?`<h3 style="font-size:${szST/4}px; color:#FFCC00; text-align:${alT}; position:absolute; top:5px; width:100%; left:0; text-transform:uppercase;">${s.cT}</h3>`:''}<div style="height:100%; display:flex; align-items:center; justify-content:center;"><p style="font-size:${szB/3.2}px; text-align:${alB}; width:100%; padding:0 20px; color:#fff; line-height:1.3;">${s.txt.replace(/\n/g,'<br>')}</p></div></div>`;
-            } else content.innerHTML = `<div class="text-stone-800 text-xs font-black uppercase text-center">[ Pantalla en Negro ]</div>`;
+            } else content.innerHTML = `<div class="text-neutral-700 text-sm font-black uppercase tracking-widest">[ PANTALLA EN NEGRO ]</div>`;
         }
 
         function cambiarSlidePreview(d) { const n = previewIndex + d; if(n>=0 && n<previewSlides.length) { previewIndex = n; actualizarPreview(); } }
-        
-        function abrirModalNuevoCanto() { 
-            document.getElementById('modal-canto-id').value=""; document.getElementById('modal-input-titulo').value=""; document.getElementById('modal-input-letra').value=""; 
-            document.getElementById('btn-eliminar-cloud').classList.add('hidden');
-            document.getElementById('modal-canto').classList.remove('hidden'); 
-        }
-        
-        function abrirModalEditarCanto(id) { 
-            const c = biblioteca.find(x => x.id === id); 
-            if(c) { 
-                document.getElementById('modal-canto-id').value=c.id; document.getElementById('modal-input-titulo').value=c.titulo; document.getElementById('modal-input-letra').value=c.letra; document.getElementById('modal-input-categoria').value=c.categoria; 
-                document.getElementById('btn-eliminar-cloud').classList.remove('hidden');
-                document.getElementById('modal-canto').classList.remove('hidden'); 
-            } 
-        }
-        
+        function abrirModalNuevoCanto() { document.getElementById('modal-canto-id').value=""; document.getElementById('modal-input-titulo').value=""; document.getElementById('modal-input-letra').value=""; document.getElementById('btn-eliminar-cloud').classList.add('hidden'); document.getElementById('modal-canto').classList.remove('hidden'); }
+        function abrirModalEditarCanto(id) { const c = biblioteca.find(x => x.id === id); if(c) { document.getElementById('modal-canto-id').value=c.id; document.getElementById('modal-input-titulo').value=c.titulo; document.getElementById('modal-input-letra').value=c.letra; document.getElementById('modal-input-categoria').value=c.categoria; document.getElementById('btn-eliminar-cloud').classList.remove('hidden'); document.getElementById('modal-canto').classList.remove('hidden'); } }
         function cerrarModalCanto() { document.getElementById('modal-canto').classList.add('hidden'); }
 
         function generarPowerPoint() {
