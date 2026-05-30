@@ -1,6 +1,6 @@
 {
-  "name": "Gestor Slides Coro MCLE",
-  "short_name": "Coro MCLE",
+  "name": "Gestor Slides Coro MCLE v2",
+  "short_name": "Coro MCLE v2",
   "description": "Gestor de cantos y diapositivas para la Misión de Lengua Española de Múnich",
   "start_url": "index.html",
   "display": "standalone",
