@@ -21,15 +21,15 @@
       import { getFirestore, collection, onSnapshot, doc, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
       // ⚠️ REEMPLAZA ESTE BLOQUE CON TUS CLAVES REALES DE FIREBASE
-const firebaseConfig = {
-  apiKey: "AIzaSyAl5BGrajS3msFrzsHvJ6hBau_WHLt43Rg",
-  authDomain: "letras-slides-coro-mcle.firebaseapp.com",
-  projectId: "letras-slides-coro-mcle",
-  storageBucket: "letras-slides-coro-mcle.firebasestorage.app",
-  messagingSenderId: "254122067309",
-  appId: "1:254122067309:web:1037bc0bf0397ce2f30664",
-  measurementId: "G-DTE3G8GZ25"
-};
+      const firebaseConfig = {
+              apiKey: "AIzaSyAl5BGrajS3msFrzsHvJ6hBau_WHLt43Rg",
+              authDomain: "letras-slides-coro-mcle.firebaseapp.com",
+              projectId: "letras-slides-coro-mcle",
+              storageBucket: "letras-slides-coro-mcle.firebasestorage.app",
+              messagingSenderId: "254122067309",
+              appId: "1:254122067309:web:1037bc0bf0397ce2f30664",
+              measurementId: "G-DTE3G8GZ25"
+            };
 
       const app = initializeApp(firebaseConfig);
       const db = getFirestore(app);
@@ -46,17 +46,35 @@ const firebaseConfig = {
         .custom-scroll::-webkit-scrollbar { width: 6px; }
         .custom-scroll::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
         
-        /* Forzado de interfaces legibles en inputs */
         .form-select, .form-input { background-color: #000; border: 1px solid var(--border-color); color: #fff; border-radius: 12px; width: 100%; outline: none; transition: all 0.2s; }
-        .form-select:focus, .form-input:focus { border-color: var(--accent-color); box-shadow: 0 0 0 2px rgba(255,204,0,0.2); }
+        .form-select:focus, .form-input:focus { border-color: var(--accent-color); }
         
-        /* Optimizaciones táctiles agresivas para móviles */
+        /* 🚨 FUERZA BRUTA CSS ANTI-LETRA-PEQUEÑA PARA MÓVILES (Pantallas de menos de 1024px de ancho) */
         @media (max-width: 1024px) {
-            html { font-size: 16px; }
+            /* Forzamos que la letra base del teléfono aumente drásticamente */
+            html, body { font-size: 18px !important; }
+            
+            /* Hacemos que las entradas de texto del editor sean gigantes */
             .form-input, .form-select { font-size: 18px !important; padding: 14px 16px !important; }
-            button { min-height: 48px; }
-            /* Eliminamos el bloqueo sticky en móvil para evitar que las listas colapsen a mini-píxeles */
-            .mobile-stack { position: relative !important; top: 0 !important; height: auto !important; max-height: none !important; }
+            
+            /* Rompemos el sistema de columnas rígidas para que se pongan una debajo de otra ocupando todo el ancho */
+            main { grid-template-columns: 1fr !important; display: flex !important; flex-direction: column !important; gap: 24px !important; padding: 12px !important; }
+            section { width: 100% !important; height: auto !important; max-height: none !important; position: relative !important; top: 0 !important; }
+            
+            /* Las cajas contenedoras ya no tienen límite de altura encogible */
+            .h-\[420px\], .h-\[450px\], .h-\[550px\], .lg\:h-\[calc\(100vh-160px\)\], .lg\:h-\[calc\(100vh-140px\)\] { 
+                height: auto !important; 
+                max-height: none !important; 
+            }
+            
+            /* Forzado de textos de las canciones para que se lean a un metro de distancia */
+            #lista-biblioteca div { padding: 16px !important; }
+            #lista-biblioteca .truncate { font-size: 18px !important; white-space: normal !important; overflow: visible !important; }
+            #lista-programa .truncate { font-size: 16px !important; white-space: normal !important; }
+            
+            /* Botones grandes y fáciles de pulsar */
+            button { min-height: 52px !important; font-size: 15px !important; }
+            .btn-primary, header button { padding: 14px 20px !important; }
         }
     </style>
 </head>
@@ -90,7 +108,7 @@ const firebaseConfig = {
 
     <main class="max-w-[1600px] mx-auto px-4 mt-4 grid grid-cols-1 lg:grid-cols-12 gap-6">
         
-        <section class="mobile-stack lg:col-span-4 xl:col-span-4 bg-neutral-900/40 border border-neutral-800 rounded-2xl p-4 flex flex-col h-[600px] lg:h-[calc(100vh-140px)] lg:sticky lg:top-24">
+        <section class="lg:col-span-4 xl:col-span-4 bg-neutral-900/40 border border-neutral-800 rounded-2xl p-4 flex flex-col h-[600px] lg:h-[calc(100vh-140px)] lg:sticky lg:top-24">
             <div class="flex justify-between items-center mb-3">
                 <h2 class="text-base font-black text-white uppercase tracking-wide"><i class="fa-solid fa-cloud text-amber-500 mr-1"></i> Cantoral (<span id="total-cantos">0</span>)</h2>
                 <button onclick="abrirModalNuevoCanto()" class="bg-amber-500 text-neutral-950 px-4 py-2 rounded-xl text-xs font-black active:scale-95 transition-all shadow-md shadow-amber-500/10">+ AÑADIR</button>
@@ -189,7 +207,7 @@ const firebaseConfig = {
             <div class="bg-black/40 px-5 py-4 flex justify-between items-center gap-3">
                 <button id="btn-eliminar-cloud" onclick="eliminarCantoCloud()" class="bg-rose-950/60 border border-rose-900 text-rose-400 font-bold px-4 py-3 rounded-xl text-xs uppercase hidden"><i class="fa-solid fa-trash mr-1"></i> Eliminar</button>
                 <div class="flex gap-3 ml-auto w-full sm:w-auto">
-                    <button onclick="cerrarModalCanto()" class="flex-1 sm:flex-none bg-neutral-800 text-neutral-300 font-bold px-5 py-3 rounded-xl text-xs uppercase">Cancelar</button>
+                    <button onclick="cerrarModalCanto()" class="bg-neutral-800 text-neutral-300 font-bold px-5 py-3 rounded-xl text-xs uppercase">Cancelar</button>
                     <button onclick="guardarCanto()" class="flex-1 sm:flex-none bg-[#FFCC00] text-neutral-950 font-black px-6 py-3 rounded-xl text-xs uppercase shadow-lg shadow-amber-500/10">Guardar en Nube</button>
                 </div>
             </div>
@@ -235,18 +253,18 @@ const firebaseConfig = {
                 const isC = colapsados[catKey];
                 
                 const head = document.createElement('div');
-                head.className = "text-xs font-black text-neutral-300 px-3 py-3.5 rounded-xl mt-2 border-l-4 border-amber-500 bg-neutral-900 flex justify-between items-center cursor-pointer select-none active:bg-neutral-800";
+                head.className = "text-xs font-black text-neutral-300 px-3 py-3.5 rounded-xl mt-2 border-l-4 border-amber-500 bg-neutral-900 flex justify-between items-center cursor-pointer select-none";
                 head.onclick = () => { colapsados[catKey] = !colapsados[catKey]; renderizarBiblioteca(lista); };
                 head.innerHTML = `<span>${canvasCategorias[catKey].toUpperCase()}</span><i class="fa-solid ${isC?'fa-chevron-right':'fa-chevron-down'} text-[10px] text-amber-500"></i>`;
                 container.appendChild(head);
                 
                 if (!isC) cantos.forEach(c => {
                     const card = document.createElement('div');
-                    card.className = "bg-neutral-950 border border-neutral-800/80 p-3.5 mb-1.5 rounded-xl flex justify-between items-center gap-3 cursor-pointer hover:border-neutral-600 active:bg-neutral-900";
+                    card.className = "bg-neutral-950 border border-neutral-800/80 p-3.5 mb-1.5 rounded-xl flex justify-between items-center gap-3 cursor-pointer";
                     card.onclick = () => agregarAlPrograma(c);
                     card.innerHTML = `
                         <div class="truncate text-[15px] font-bold text-neutral-200 flex-1 leading-snug">${c.titulo}</div>
-                        <button onclick="abrirModalEditarCanto('${c.id}'); event.stopPropagation();" class="p-2.5 text-neutral-500 hover:text-amber-500 active:scale-90 shrink-0">
+                        <button onclick="abrirModalEditarCanto('${c.id}'); event.stopPropagation();" class="p-2.5 text-neutral-500 hover:text-amber-500 shrink-0">
                             <i class="fa-solid fa-pen text-base"></i>
                         </button>
                     `;
@@ -270,7 +288,7 @@ const firebaseConfig = {
 
         function eliminarCantoCloud() {
             const id = document.getElementById('modal-canto-id').value;
-            if(!id || !confirm("¿Eliminar este canto de la nube para siempre?")) return;
+            if(!id || !confirm("¿Eliminar este canto?")) return;
             const { doc, deleteDoc, db } = window.dbCloud;
             deleteDoc(doc(db, "cantos", id))
                 .then(() => { cerrarModalCanto(); })
@@ -299,9 +317,9 @@ const firebaseConfig = {
                     <div class="truncate text-[14px] font-bold uppercase tracking-tight text-neutral-200">${c.titulo}</div>
                 </div>
                 <div class="flex gap-1 items-center shrink-0">
-                    <button onclick="moverCanto(${i},-1)" class="p-2 text-neutral-400 hover:text-white"><i class="fa-solid fa-arrow-up text-sm"></i></button>
-                    <button onclick="moverCanto(${i},1)" class="p-2 text-neutral-400 hover:text-white"><i class="fa-solid fa-arrow-down text-sm"></i></button>
-                    <button onclick="removerDelPrograma(${i})" class="p-2 text-neutral-500 hover:text-rose-400 ml-1"><i class="fa-solid fa-xmark text-base"></i></button>
+                    <button onclick="moverCanto(${i},-1)" class="p-2 text-neutral-400"><i class="fa-solid fa-arrow-up text-sm"></i></button>
+                    <button onclick="moverCanto(${i},1)" class="p-2 text-neutral-400"><i class="fa-solid fa-arrow-down text-sm"></i></button>
+                    <button onclick="removerDelPrograma(${i})" class="p-2 text-neutral-500"><i class="fa-solid fa-xmark text-base"></i></button>
                 </div>`;
                 container.appendChild(div);
             });
